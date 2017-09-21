@@ -1,0 +1,14 @@
+group 'fr.neutronstars'
+version '1.0.0'
+
+apply plugin: 'java'
+
+sourceCompatibility = 1.8
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    compile 'net.dv8tion:JDA:3.3.0_273'
+}
