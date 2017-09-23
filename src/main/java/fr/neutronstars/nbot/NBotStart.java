@@ -1,11 +1,15 @@
 package fr.neutronstars.nbot;
 
+import fr.neutronstars.nbot.command.CommandManager;
+import fr.neutronstars.nbot.command.defaut.DefaultCommand;
 import fr.neutronstars.nbot.exception.NBotConfigurationException;
 import fr.neutronstars.nbot.logger.NBotLogger;
 import fr.neutronstars.nbot.plugin.PluginManager;
 import fr.neutronstars.nbot.util.Configuration;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by NeutronStars on 30/07/2017
@@ -16,14 +20,16 @@ public class NBotStart
 
     public static void main(String... args)
     {
+        logger.log(String.format("Starting %1$s v%2$s by %3$s...", NBot.getName(), NBot.getVersion(), NBot.getAuthor()));
+
         loadFolders("guilds", "plugins", "config");
 
         Configuration configuration = loadConfiguration();
         setDefaultConfiguration(configuration);
 
-        logger.log(String.format("Starting %1$s v%2$s by %3$s...", NBot.getName(), NBot.getVersion(), NBot.getAuthor()));
-
         PluginManager pluginManager = new PluginManager(configuration.getString("loadedFormat"), configuration.getString("enabledFormat"), configuration.getString("disabledFormat"));
+        CommandManager.registerCommand(new DefaultCommand(), null);
+        pluginManager.registerCommands();
 
         try
         {

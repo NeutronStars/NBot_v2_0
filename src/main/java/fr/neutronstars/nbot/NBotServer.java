@@ -36,8 +36,6 @@ final class NBotServer
         this.configuration = configuration;
         this.pluginManager = pluginManager;
 
-        CommandManager.registerCommand(new DefaultCommand(), null);
-
         jda = new JDABuilder(AccountType.BOT).setToken(configuration.getString("token"))
                                              .addEventListener(new NBotListener(pluginManager)).buildAsync();
     }

@@ -1,6 +1,7 @@
 package fr.neutronstars.nbot.entity;
 
 import fr.neutronstars.nbot.NBot;
+import fr.neutronstars.nbot.NBotStart;
 import fr.neutronstars.nbot.logger.NBotLogger;
 import fr.neutronstars.nbot.plugin.PluginManager;
 import net.dv8tion.jda.core.entities.*;
@@ -52,6 +53,7 @@ public class Console implements CommandSender, Runnable
 
         NBot.getJDA().shutdown();
         logger.log(NBot.getName()+ " is down.");
+
         NBot.saveLogger();
         System.exit(0);
     }

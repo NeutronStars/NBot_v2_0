@@ -451,8 +451,7 @@ public class Guild implements net.dv8tion.jda.core.entities.Guild
 
     public boolean hasPermission(User user, int power)
     {
-        if(guild.getOwner().equals(getMember(user))) return true;
-        if(getPermissionUser(user) >= power) return true;
+        if(guild.getOwner().equals(getMember(user)) || getPermissionUser(user) >= power) return true;
 
         for(Role role : getMember(user).getRoles())
             if(role.hasPermission(Permission.ADMINISTRATOR) || getPermissionRole(role) >= power) return true;
@@ -502,6 +501,11 @@ public class Guild implements net.dv8tion.jda.core.entities.Guild
     public boolean executeCommand(fr.neutronstars.nbot.entity.User user, String command, Message message)
     {
         return commandMap.onCommand(user, command, message);
+    }
+
+    public boolean setCustomNameCommand(String lastName, String newName)
+    {
+        return commandMap.setCustomNameCommand(lastName, newName);
     }
 
     private void save(Map<String, Integer> map, JSONWriter writer) throws IOException

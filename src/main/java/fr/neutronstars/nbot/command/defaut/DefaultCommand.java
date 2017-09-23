@@ -35,7 +35,7 @@ public class DefaultCommand
             if(!guild.hasPermission(user, command.getPower())) continue;
             String value = "[>](1) Description : "+command.getDescription();
             if(command.getAliases().size() > 0) value += "\n[>](2) Aliases : "+command.getAliasesToString();
-            builder.addField(command.getName(), value, false);
+            builder.addField(command.getSimpleName(), value, false);
         }
 
         user.sendMessageToChannel(builder.build());
@@ -72,11 +72,11 @@ public class DefaultCommand
     }
 
     @Command(name="power", powers = 100)
-    private void onPower(SimpleCommand command, Message message, String[] args, Guild guild)
+    private void onPower(SimpleCommand command, User user1, Message message, String[] args, Guild guild)
     {
         if(args.length < 2)
         {
-            message.getMessageChannel().sendMessageToChannel(command.getSimpleName()+" <power> <User|Role>");
+            message.getMessageChannel().sendMessageToChannel(command.getSimpleName()+" <power> <User|Role|Command>");
             return;
         }
 
@@ -84,18 +84,21 @@ public class DefaultCommand
         try {
             powers = Integer.parseInt(args[0]);
         }catch(NumberFormatException nfe){
-            message.getMessageChannel().sendMessageToChannel(command.getSimpleName()+" <power> <User|Role>");
+            message.getMessageChannel().sendMessageToChannel(command.getSimpleName()+" <power> <User|Role|Command>");
             return;
         }
 
         if(message.getMentionedUsers().size() == 0 && message.getMentionedRoles().size() == 0)
         {
             SimpleCommand simpleCommand = guild.getCommand(args[1]);
-            if(simpleCommand == null) message.getMessageChannel().sendMessageToChannel(command.getSimpleName()+" <power> <User|Role>");
+            if(simpleCommand == null)
+                message.getMessageChannel().sendMessageToChannel(command.getSimpleName() + " <power> <User|Role|Command>");
             else
             {
+                if(!guild.hasPermission(user1, simpleCommand.getPower()))
+                    return;
                 simpleCommand.setPower(powers);
-                message.getMessageChannel().sendMessageToChannel("Power modified for the command "+args[2]);
+                message.getMessageChannel().sendMessageToChannel("Power modified for the command " + args[1]);
             }
             return;
         }
@@ -115,5 +118,40 @@ public class DefaultCommand
         }
 
         message.getMessageChannel().sendMessageToChannel(builder.toString());
+    }
+
+    @Command(name = "commandname", powers = 100)
+    private void onCommandName(SimpleCommand simpleCommand, User user, String[] args, Guild guild, Channel channel)
+    {
+        if(args.length < 2)
+        {
+            channel.sendMessageToChannel(simpleCommand.getSimpleName()+" <commandName> <newName>");
+            return;
+        }
+        SimpleCommand command = guild.getCommand(args[0]);
+
+        if(command == null)
+        {
+            channel.sendMessageToChannel(simpleCommand.getSimpleName()+" <commandName> <newName>");
+            return;
+        }
+
+        if(!guild.hasPermission(user, command.getPower())) return;
+
+        if(args[1].equalsIgnoreCase("") || args[1].equalsIgnoreCase("null")
+                || args[1].equalsIgnoreCase("reset") || args[1].equalsIgnoreCase("-r"))
+        {
+            guild.setCustomNameCommand(command.getSimpleName(), null);
+            channel.sendMessageToChannel("Command name reset for "+command.getName());
+            return;
+        }
+
+        if(guild.setCustomNameCommand(command.getSimpleName(), args[1]))
+        {
+            channel.sendMessageToChannel("Command name changed for "+args[0]+" >> "+command.getSimpleName());
+            return;
+        }
+
+        channel.sendMessageToChannel("Impossible assignied the name "+args[1]+" for the command "+command.getSimpleName());
     }
 }

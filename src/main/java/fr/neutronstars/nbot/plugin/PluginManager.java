@@ -74,6 +74,12 @@ public final class PluginManager
         return null;
     }
 
+    public void registerCommands()
+    {
+        for(NBotPlugin plugin : plugins.values())
+            plugin.onRegisterCommands();
+    }
+
     public void enablePlugins()
     {
         for(NBotPlugin nBotPlugin : plugins.values())
