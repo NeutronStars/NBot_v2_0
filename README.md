@@ -4,7 +4,7 @@ N-Bot API is an __*open-source project*__ using **JDA** which will allow you **c
 
 For use it download the [latest release](https://github.com/NeutronStars/N-Bot/releases) and execute the following command `java -jar N-Bot-VERSION-withDependencies-JDA-VERSION.jar` a **config** folder will appear who contains an **config.json** file. Open it and insert your bot **token**, now you can re-execute the previous command, folders are going to generate. When you want to stop the bot, just print `stop` in the console.
 
-For create a **plugin**, add the **N-Bot API** on your project libraries, your main class will need to extends **NBotPlugin** who contains `onLoad()`, `onEnable()` and `onDisable()` methods with `@Override` annotation.
+For create a **plugin**, add the **N-Bot API** on your project libraries, your main class will need to extends **NBotPlugin** who contains `onLoad()`, `onRegisterCommands()`, `onEnable()` and `onDisable()` methods with `@Override` annotation.
 
 ```java
 public class MyPlugin extends NBotPlugin
@@ -12,6 +12,12 @@ public class MyPlugin extends NBotPlugin
   public MyPlugin()
   {
     super("Author");
+  }
+
+  @Override
+  public void onCommandRegisters()
+  {
+     NBot.getLogger().log("Command registered for MyPlugin.");
   }
 
   @Override
@@ -51,7 +57,7 @@ public class MyCommand
 }
 ```
 
-and register your command class in the `onEnable()` method like this.
+and register your command class in the `onCommandRegisters()` method like this.
 
 ```java
 import fr.neutronstars.nbot.command.CommandManager;
@@ -59,10 +65,9 @@ import fr.neutronstars.nbot.command.CommandManager;
 public class MyPlugin extends NBotPlugin
 {
   @Override
-  public void onEnable()
+  public void onCommandRegisters()
   {
-     NBot.getLogger().log("MyPlugin is loaded.");
-     CommandManager.registerCommand(new MyCommand(), this);
+     super.registerCommand(MyCommand.class);
   }
 }
 ```
