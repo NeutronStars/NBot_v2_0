@@ -17,7 +17,7 @@ import java.io.IOException;
  */
 public final class NBot
 {
-    private static final String NAME = "NBot", VERSION = "2.0.1", AUTHOR = "NeutronStars";
+    private static final String NAME = "NBot", VERSION = "2.0.2", AUTHOR = "NeutronStars";
     private static final NBotLogger logger = NBotLogger.getLogger("NBot");
     private static NBotServer server;
 
@@ -57,6 +57,11 @@ public final class NBot
         if(guild == null) return null;
         if(server == null) throw new NBotInitializationException("The guild cannot be initialized because the NBotServer hasn't finished loading.");
         return server.getGuild(guild);
+    }
+
+    public static void removeGuild(Guild guild)
+    {
+        server.removeGuild(guild);
     }
 
     public static Console getConsole()

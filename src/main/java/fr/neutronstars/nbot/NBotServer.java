@@ -70,4 +70,13 @@ final class NBotServer
 
         return guilds.get(guild.getIdLong());
     }
+
+    public void removeGuild(Guild guild)
+    {
+        if(guilds.containsKey(guild.getIdLong()))
+        {
+            guild.save();
+            guilds.remove(guild.getIdLong());
+        }
+    }
 }

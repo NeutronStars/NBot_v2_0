@@ -27,8 +27,7 @@ public class Channel implements MessageChannel
 
     protected Channel(User user)
     {
-        if(!user.hasPrivateChannel()) user.openPrivateChannel().complete();
-        messageChannel = ((UserImpl)user).getPrivateChannel();
+        messageChannel = user.openPrivateChannel().complete();
     }
 
     public MessageChannel getMessageChannel()

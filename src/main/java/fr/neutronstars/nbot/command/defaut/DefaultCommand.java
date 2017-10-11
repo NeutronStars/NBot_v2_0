@@ -10,6 +10,7 @@ import fr.neutronstars.nbot.entity.User;
 import fr.neutronstars.nbot.plugin.NBotPlugin;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Role;
+import net.dv8tion.jda.core.entities.SelfUser;
 
 import java.awt.*;
 import java.util.Collection;
@@ -153,5 +154,19 @@ public class DefaultCommand
         }
 
         channel.sendMessageToChannel("Impossible assignied the name "+args[1]+" for the command "+command.getSimpleName());
+    }
+
+    @Command(name = "info",description = "Show the infos of this bot.")
+    private void info(SelfUser user, Channel channel)
+    {
+        EmbedBuilder builder = new EmbedBuilder();
+        builder.setAuthor(user.getName(), "https://discordapp.com/oauth2/authorize?client_id="+user.getId()+"&scope=bot&permissions=2146958583", user.getAvatarUrl()+"?size=256");
+        builder.setDescription("To invite the bot to your guild, click on its name above.");
+        builder.addBlankField(false);
+        builder.addField("Guilds", "[>](1) "+NBot.getJDA().getGuilds().size(), true);
+        builder.addField("Plugins", "[>](1) "+NBot.getPluginManager().getPlugins().size(), true);
+        builder.setFooter(NBot.getName()+" v"+NBot.getVersion()+" by "+NBot.getAuthor(), "");
+        builder.setColor(Color.RED);
+        channel.sendMessageToChannel(builder.build());
     }
 }

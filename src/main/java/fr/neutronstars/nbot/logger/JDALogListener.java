@@ -10,7 +10,7 @@ public class JDALogListener implements LogListener
 {
     private final NBotLogger logger = NBotLogger.getLogger("JDA");
 
-    public void onLog(SimpleLog log, SimpleLog.Level logLevel, Object message)
+    public void onLog(SimpleLog log, org.slf4j.event.Level logLevel, Object message)
     {
         logger.log(Level.valueOf(logLevel.toString()), message.toString(), false);
     }

@@ -8,8 +8,12 @@ import fr.neutronstars.nbot.logger.NBotLogger;
 import fr.neutronstars.nbot.plugin.PluginManager;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.events.ReadyEvent;
+import net.dv8tion.jda.core.events.guild.GuildBanEvent;
+import net.dv8tion.jda.core.events.guild.GuildLeaveEvent;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
+
+import java.io.File;
 
 /**
  * Created by NeutronStars on 01/08/2017
@@ -45,6 +49,15 @@ public class NBotListener extends ListenerAdapter
         logger.log(builder.toString());
 
         NBot.getConsole();
+
+        File folder = new File("guilds");
+
+        for(File file : folder.listFiles())
+        {
+            if(!file.isDirectory()) continue;
+            System.out.println(file.getName());
+            if(event.getJDA().getGuildById(file.getName()) == null) deleteFile(file);
+        }
     }
 
     public void onMessageReceived(MessageReceivedEvent event)
@@ -59,5 +72,16 @@ public class NBotListener extends ListenerAdapter
 
         if(guild.executeCommand(new User(event.getAuthor()), message, message1))
             message1.deleteTheMessage();
+    }
+
+    private void deleteFile(File file)
+    {
+        if(file == null) return;
+        if(file.isDirectory())
+        {
+            for(File file1 : file.listFiles())
+                deleteFile(file1);
+        }
+        file.delete();
     }
 }

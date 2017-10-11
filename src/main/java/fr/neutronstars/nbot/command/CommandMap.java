@@ -2,8 +2,13 @@ package fr.neutronstars.nbot.command;
 
 import fr.neutronstars.nbot.NBot;
 import fr.neutronstars.nbot.entity.*;
+import fr.neutronstars.nbot.entity.Channel;
+import fr.neutronstars.nbot.entity.Guild;
+import fr.neutronstars.nbot.entity.Message;
+import fr.neutronstars.nbot.entity.User;
 import fr.neutronstars.nbot.util.Configuration;
 import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.entities.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -157,13 +162,21 @@ public final class CommandMap
             if(parameters[i].getType() == JDA.class) objects[i] = NBot.getJDA();
             else if(parameters[i].getType() == String[].class) objects[i] = args;
             else if(parameters[i].getType() == String.class) objects[i] = command;
-            else if(parameters[i].getType() == Message.class) objects[i] = message;
-            else if(parameters[i].getType() == Guild.class) objects[i] = message == null ? null : NBot.getGuild(message.getGuild());
-            else if(parameters[i].getType() == Channel.class) objects[i] = message == null ? null : message.getMessageChannel();
+            else if(parameters[i].getType() == Message.class || parameters[i].getType() == net.dv8tion.jda.core.entities.Message.class) objects[i] = message;
+            else if(parameters[i].getType() == Guild.class || parameters[i].getType() == net.dv8tion.jda.core.entities.Guild.class) objects[i] = message == null ? null : NBot.getGuild(message.getGuild());
+            else if(parameters[i].getType() == Channel.class || parameters[i].getType() == MessageChannel.class) objects[i] = message == null ? null : message.getMessageChannel();
 
-            else if(parameters[i].getType() == User.class) objects[i] = user;
+            else if(parameters[i].getType() == User.class || parameters[i].getType() == net.dv8tion.jda.core.entities.User.class) objects[i] = user;
             else if(parameters[i].getType() == CommandSender.class) objects[i] = user;
             else if(parameters[i].getType() == SimpleCommand.class) objects[i] = simpleCommand;
+
+            else if(parameters[i].getType() == Category.class) objects[i] = message == null ? null : message.getCategory();
+            else if(parameters[i].getType() == Member.class) objects[i] = message == null ? null : message.getGuild() == null ? null : message.getGuild().getMember(user);
+
+            else if(parameters[i].getType() == PrivateChannel.class) objects[i] = user == null ? null : (PrivateChannel) user.getMessageChannel();
+            else if(parameters[i].getType() == TextChannel.class) objects[i] = message == null ? null : message.getChannel() instanceof TextChannel ? (TextChannel) message.getChannel() : null;
+
+            else if(parameters[i].getType() == SelfUser.class) objects[i] = NBot.getJDA().getSelfUser();
         }
 
         simpleCommand.getMethod().invoke(simpleCommand.getObject(), objects);

@@ -20,6 +20,8 @@ public class NBotStart
 
     public static void main(String... args)
     {
+        System.setProperty("file.encoding", "UTF-8");
+
         logger.log(String.format("Starting %1$s v%2$s by %3$s...", NBot.getName(), NBot.getVersion(), NBot.getAuthor()));
 
         loadFolders("guilds", "plugins", "config");
