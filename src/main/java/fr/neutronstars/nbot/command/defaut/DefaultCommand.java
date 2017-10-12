@@ -160,12 +160,12 @@ public class DefaultCommand
     private void info(SelfUser user, Channel channel)
     {
         EmbedBuilder builder = new EmbedBuilder();
-        builder.setAuthor(user.getName(), "https://discordapp.com/oauth2/authorize?client_id="+user.getId()+"&scope=bot&permissions=2146958583", user.getAvatarUrl()+"?size=256");
+        builder.setAuthor(user.getName(), "https://discordapp.com/oauth2/authorize?client_id=" + user.getId() + "&scope=bot&permissions=2146958583", user.getAvatarUrl() == null ? null : user.getAvatarUrl() + "?size=256");
         builder.setDescription("To invite the bot to your guild, click on its name above.");
-        builder.addBlankField(false);
-        builder.addField("Guilds", "[>](1) "+NBot.getJDA().getGuilds().size(), true);
-        builder.addField("Plugins", "[>](1) "+NBot.getPluginManager().getPlugins().size(), true);
-        builder.setFooter(NBot.getName()+" v"+NBot.getVersion()+" by "+NBot.getAuthor(), "");
+        builder.addField("Guilds", "[>](1) " + NBot.getJDA().getGuilds().size(), true);
+        builder.addField("Users", "[>](1) " + NBot.getJDA().getUsers().size(), true);
+        builder.addField("Plugins", "[>](1) " + NBot.getPluginManager().getPlugins().size(), false);
+        builder.setFooter("this bot use "+NBot.getName() + " v" + NBot.getVersion() + " developped by " + NBot.getAuthor(), null);
         builder.setColor(Color.RED);
         channel.sendMessageToChannel(builder.build());
     }
