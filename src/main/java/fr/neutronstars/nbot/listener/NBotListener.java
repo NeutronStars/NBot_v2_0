@@ -55,7 +55,6 @@ public class NBotListener extends ListenerAdapter
         for(File file : folder.listFiles())
         {
             if(!file.isDirectory()) continue;
-            System.out.println(file.getName());
             if(event.getJDA().getGuildById(file.getName()) == null) deleteFile(file);
         }
     }

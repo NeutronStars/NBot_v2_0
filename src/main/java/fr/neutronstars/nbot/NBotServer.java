@@ -7,6 +7,7 @@ import fr.neutronstars.nbot.entity.Guild;
 import fr.neutronstars.nbot.listener.NBotListener;
 import fr.neutronstars.nbot.logger.NBotLogger;
 import fr.neutronstars.nbot.plugin.PluginManager;
+import fr.neutronstars.nbot.sheduler.Sheduler;
 import fr.neutronstars.nbot.util.Configuration;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
@@ -25,11 +26,13 @@ final class NBotServer
 {
     private final NBotLogger logger = NBotLogger.getLogger("NBot");
     private final Map<Long, Guild> guilds = new HashMap<>();
+    private final Sheduler sheduler = new Sheduler();
     private final Configuration configuration;
     private final PluginManager pluginManager;
     private final JDA jda;
 
     private Console console;
+    private int tps;
 
     protected NBotServer(Configuration configuration, PluginManager pluginManager) throws LoginException, RateLimitedException
     {
@@ -69,6 +72,21 @@ final class NBotServer
         }
 
         return guilds.get(guild.getIdLong());
+    }
+
+    public Sheduler getSheduler()
+    {
+        return sheduler;
+    }
+
+    public int getTps()
+    {
+        return tps;
+    }
+
+    public void setTps(int tps)
+    {
+        this.tps = tps;
     }
 
     public void removeGuild(Guild guild)

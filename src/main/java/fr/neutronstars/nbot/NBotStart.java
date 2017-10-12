@@ -35,12 +35,45 @@ public class NBotStart
 
         try
         {
-            NBot.setServer(new NBotServer(configuration, pluginManager));
+            NBotServer server = new NBotServer(configuration, pluginManager);
+            NBot.setServer(server);
+            loop(server);
         } catch(Exception e)
         {
             logger.logThrowable(e);
             NBot.saveLogger();
         }
+    }
+
+    private static void loop(NBotServer server)
+    {
+        long lns = System.nanoTime();
+        double ns = 1000000000.0/20.0;
+        long ls = System.currentTimeMillis();
+
+        int tps = 0;
+
+        while(true)
+        {
+            if(System.nanoTime() - lns > ns)
+            {
+                lns += ns;
+                update();
+                tps++;
+            }
+
+            if(System.currentTimeMillis() - ls >= 1000)
+            {
+                ls = System.currentTimeMillis();
+                server.setTps(tps);
+                tps = 0;
+            }
+        }
+    }
+
+    private static void update()
+    {
+        NBot.getSheduler().updateTasks();
     }
 
     private static Configuration loadConfiguration()
