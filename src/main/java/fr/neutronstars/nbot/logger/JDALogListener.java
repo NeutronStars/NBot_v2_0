@@ -12,6 +12,7 @@ public class JDALogListener implements LogListener
 
     public void onLog(SimpleLog log, org.slf4j.event.Level logLevel, Object message)
     {
+
         logger.log(Level.valueOf(logLevel.toString()), message.toString(), false);
     }
 

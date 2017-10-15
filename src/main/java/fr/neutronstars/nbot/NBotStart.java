@@ -73,7 +73,7 @@ public class NBotStart
 
     private static void update()
     {
-        NBot.getSheduler().updateTasks();
+        NBot.getScheduler().updateTasks();
     }
 
     private static Configuration loadConfiguration()

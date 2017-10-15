@@ -1,13 +1,11 @@
 package fr.neutronstars.nbot;
 
-import fr.neutronstars.nbot.command.CommandManager;
-import fr.neutronstars.nbot.command.defaut.DefaultCommand;
 import fr.neutronstars.nbot.entity.Console;
 import fr.neutronstars.nbot.entity.Guild;
 import fr.neutronstars.nbot.listener.NBotListener;
 import fr.neutronstars.nbot.logger.NBotLogger;
 import fr.neutronstars.nbot.plugin.PluginManager;
-import fr.neutronstars.nbot.sheduler.Sheduler;
+import fr.neutronstars.nbot.scheduler.Scheduler;
 import fr.neutronstars.nbot.util.Configuration;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
@@ -16,7 +14,6 @@ import net.dv8tion.jda.core.exceptions.RateLimitedException;
 
 import javax.security.auth.login.LoginException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -26,7 +23,7 @@ final class NBotServer
 {
     private final NBotLogger logger = NBotLogger.getLogger("NBot");
     private final Map<Long, Guild> guilds = new HashMap<>();
-    private final Sheduler sheduler = new Sheduler();
+    private final Scheduler scheduler = new Scheduler();
     private final Configuration configuration;
     private final PluginManager pluginManager;
     private final JDA jda;
@@ -74,9 +71,9 @@ final class NBotServer
         return guilds.get(guild.getIdLong());
     }
 
-    public Sheduler getSheduler()
+    public Scheduler getScheduler()
     {
-        return sheduler;
+        return scheduler;
     }
 
     public int getTps()

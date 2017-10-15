@@ -6,7 +6,7 @@ import fr.neutronstars.nbot.exception.NBotInitializationException;
 import fr.neutronstars.nbot.exception.NBotUnsupportedOperationException;
 import fr.neutronstars.nbot.logger.NBotLogger;
 import fr.neutronstars.nbot.plugin.PluginManager;
-import fr.neutronstars.nbot.sheduler.Sheduler;
+import fr.neutronstars.nbot.scheduler.Scheduler;
 import fr.neutronstars.nbot.util.Configuration;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.hooks.EventListener;
@@ -80,9 +80,9 @@ public final class NBot
         return server.getNBotConfiguration();
     }
 
-    public static Sheduler getSheduler()
+    public static Scheduler getScheduler()
     {
-        return server.getSheduler();
+        return server.getScheduler();
     }
 
     public static void addJDAListener(EventListener listener)

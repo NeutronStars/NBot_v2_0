@@ -1,4 +1,4 @@
-package fr.neutronstars.nbot.sheduler;
+package fr.neutronstars.nbot.scheduler;
 
 import fr.neutronstars.nbot.NBot;
 import fr.neutronstars.nbot.exception.NBotTaskException;
@@ -12,23 +12,23 @@ public abstract class NBotRunnable implements Runnable
 
     public final void runTask()
     {
-        NBot.getSheduler().runTask(this);
+        NBot.getScheduler().runTask(this);
     }
 
     public final void runTaskLater(long delay)
     {
-        NBot.getSheduler().runTaskLater(this, delay);
+        NBot.getScheduler().runTaskLater(this, delay);
     }
 
     public final void runTaskTimer(long delay, long period)
     {
-        id = NBot.getSheduler().runTaskTimer(this, delay, period);
+        id = NBot.getScheduler().runTaskTimer(this, delay, period);
     }
 
     public void cancel()
     {
         if(id == -1) throw new NBotTaskException("This task is not started.");
-        NBot.getSheduler().cancelTask(id);
+        NBot.getScheduler().cancelTask(id);
         id = -1;
     }
 }

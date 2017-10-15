@@ -1,4 +1,4 @@
-package fr.neutronstars.nbot.sheduler;
+package fr.neutronstars.nbot.scheduler;
 
 import fr.neutronstars.nbot.exception.NBotTaskException;
 
@@ -10,7 +10,7 @@ import java.util.Map;
 /**
  * Created by NeutronStars on 12/10/2017
  */
-public class Sheduler
+public class Scheduler
 {
     private final Map<Integer, NBotTask> taskMap = new HashMap<>();
 

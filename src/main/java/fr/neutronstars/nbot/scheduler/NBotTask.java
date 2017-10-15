@@ -1,4 +1,4 @@
-package fr.neutronstars.nbot.sheduler;
+package fr.neutronstars.nbot.scheduler;
 
 /**
  * Created by NeutronStars on 12/10/2017

@@ -9,5 +9,5 @@ package fr.neutronstars.nbot.logger;
 
 public enum Level
 {
-	ALL, TRACE, DEBUG, INFO, WARNING, FATAL, OFF;
+	ALL, TRACE, DEBUG, INFO, WARNING, FATAL, OFF, ERROR, WARN;
 }
