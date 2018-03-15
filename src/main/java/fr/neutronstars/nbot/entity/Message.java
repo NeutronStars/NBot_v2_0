@@ -7,6 +7,7 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.core.requests.restaction.MessageAction;
 
 import java.time.OffsetDateTime;
 import java.util.Formatter;
@@ -50,6 +51,30 @@ public class Message implements net.dv8tion.jda.core.entities.Message
         return message.getMentionedRoles();
     }
 
+    @Override
+    public List<Member> getMentionedMembers(Guild guild)
+    {
+        return message.getMentionedMembers(guild);
+    }
+
+    @Override
+    public List<Member> getMentionedMembers()
+    {
+        return message.getMentionedMembers();
+    }
+
+    @Override
+    public List<IMentionable> getMentions(MentionType... types)
+    {
+        return message.getMentions(types);
+    }
+
+    @Override
+    public boolean isMentioned(IMentionable mentionable, MentionType... types)
+    {
+        return message.isMentioned(mentionable, types);
+    }
+
     public boolean mentionsEveryone()
     {
         return message.mentionsEveryone();
@@ -75,19 +100,34 @@ public class Message implements net.dv8tion.jda.core.entities.Message
         return message.getMember();
     }
 
-    public String getContent()
+    @Override
+    public String getContentDisplay()
     {
-        return message.getContent();
+        return message.getContentDisplay();
     }
 
-    public String getRawContent()
+    @Override
+    public String getContentRaw()
     {
-        return message.getContent();
+        return message.getContentRaw();
     }
 
-    public String getStrippedContent()
+    @Override
+    public String getContentStripped()
     {
-        return message.getStrippedContent();
+        return message.getContentStripped();
+    }
+
+    @Override
+    public List<String> getInvites()
+    {
+        return message.getInvites();
+    }
+
+    @Override
+    public String getNonce()
+    {
+        return message.getNonce();
     }
 
     public boolean isFromType(ChannelType channelType)
@@ -165,6 +205,12 @@ public class Message implements net.dv8tion.jda.core.entities.Message
         return message.isTTS();
     }
 
+    @Override
+    public MessageAction editMessage(CharSequence newContent)
+    {
+        return message.editMessage(newContent);
+    }
+
     public RestAction<net.dv8tion.jda.core.entities.Message> editMessage(String s)
     {
         return message.editMessage(s);
@@ -175,7 +221,7 @@ public class Message implements net.dv8tion.jda.core.entities.Message
         editMessage(s).complete();
     }
 
-    public RestAction<net.dv8tion.jda.core.entities.Message> editMessage(MessageEmbed messageEmbed)
+    public MessageAction editMessage(MessageEmbed messageEmbed)
     {
         return message.editMessage(messageEmbed);
     }
@@ -185,7 +231,7 @@ public class Message implements net.dv8tion.jda.core.entities.Message
         editMessage(messageEmbed).complete();
     }
 
-    public RestAction<net.dv8tion.jda.core.entities.Message> editMessageFormat(String s, Object... objects)
+    public MessageAction editMessageFormat(String s, Object... objects)
     {
         return message.editMessageFormat(s, objects);
     }
@@ -195,7 +241,7 @@ public class Message implements net.dv8tion.jda.core.entities.Message
         editMessageFormat(s, objects).complete();
     }
 
-    public RestAction<net.dv8tion.jda.core.entities.Message> editMessage(net.dv8tion.jda.core.entities.Message message)
+    public MessageAction editMessage(net.dv8tion.jda.core.entities.Message message)
     {
         return this.message.editMessage(message);
     }

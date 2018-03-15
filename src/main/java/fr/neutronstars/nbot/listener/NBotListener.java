@@ -44,7 +44,7 @@ public class NBotListener extends ListenerAdapter
 
         String playing = NBot.getConfiguration().getString("playing");
         if(playing != null && !playing.equalsIgnoreCase("null"))
-            NBot.getJDA().getPresence().setGame(Game.of(playing));
+            NBot.getJDA().getPresence().setGame(Game.listening(playing));
 
         logger.log(builder.toString());
 
@@ -63,7 +63,7 @@ public class NBotListener extends ListenerAdapter
     {
         if(event.getAuthor().isBot() || event.getTextChannel() == null) return;
         Guild guild = NBot.getGuild(event.getGuild());
-        String message = event.getMessage().getContent();
+        String message = event.getMessage().getContentRaw();
         if(!message.startsWith(guild.getPrefix())) return;
 
         message = message.replaceFirst(guild.getPrefix(), "");

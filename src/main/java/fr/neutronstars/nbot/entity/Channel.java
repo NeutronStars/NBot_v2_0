@@ -7,6 +7,7 @@ import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.impl.UserImpl;
 import net.dv8tion.jda.core.requests.RestAction;
+import net.dv8tion.jda.core.requests.restaction.MessageAction;
 
 import java.io.File;
 import java.io.InputStream;
@@ -70,12 +71,12 @@ public class Channel implements MessageChannel
         return messageChannel.sendMessage(text);
     }
 
-    public RestAction<Message> sendMessage(Message msg)
+    public MessageAction sendMessage(Message msg)
     {
         return messageChannel.sendMessage(msg);
     }
 
-    public RestAction<Message> sendMessageFormat(String format, Object... args)
+    public MessageAction sendMessageFormat(String format, Object... args)
     {
         return messageChannel.sendMessageFormat(format, args);
     }

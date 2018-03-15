@@ -23,13 +23,11 @@ import net.dv8tion.jda.core.utils.cache.MemberCacheView;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
 import org.json.JSONObject;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by NeutronStars on 19/07/2017
@@ -70,6 +68,12 @@ public class Guild implements net.dv8tion.jda.core.entities.Guild
         return guild;
     }
 
+    @Override
+    public RestAction<EnumSet<Region>> retrieveRegions()
+    {
+        return guild.retrieveRegions();
+    }
+
     public String getName()
     {
         return guild.getName();
@@ -85,6 +89,12 @@ public class Guild implements net.dv8tion.jda.core.entities.Guild
         return guild.getIconUrl();
     }
 
+    @Override
+    public Set<String> getFeatures()
+    {
+        return guild.getFeatures();
+    }
+
     public String getSplashId()
     {
         return guild.getSplashId();
@@ -93,6 +103,12 @@ public class Guild implements net.dv8tion.jda.core.entities.Guild
     public String getSplashUrl()
     {
         return guild.getSplashUrl();
+    }
+
+    @Override
+    public RestAction<String> getVanityUrl()
+    {
+        return guild.getVanityUrl();
     }
 
     public VoiceChannel getAfkChannel()
@@ -118,6 +134,12 @@ public class Guild implements net.dv8tion.jda.core.entities.Guild
     public Region getRegion()
     {
         return guild.getRegion();
+    }
+
+    @Override
+    public String getRegionRaw()
+    {
+        return guild.getRegionRaw();
     }
 
     public boolean isMember(User user)
@@ -285,9 +307,11 @@ public class Guild implements net.dv8tion.jda.core.entities.Guild
         return guild.getEmoteCache();
     }
 
-    public RestAction<List<User>> getBans()
+    @Nonnull
+    @Override
+    public RestAction<List<Ban>> getBanList()
     {
-        return guild.getBans();
+        return guild.getBanList();
     }
 
     public RestAction<Integer> getPrunableMemberCount(int i)
@@ -298,12 +322,6 @@ public class Guild implements net.dv8tion.jda.core.entities.Guild
     public Role getPublicRole()
     {
         return guild.getPublicRole();
-    }
-
-    @Deprecated
-    public TextChannel getPublicChannel()
-    {
-        return guild.getPublicChannel();
     }
 
     @Nullable

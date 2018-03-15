@@ -8,9 +8,6 @@ import fr.neutronstars.nbot.plugin.PluginManager;
 import fr.neutronstars.nbot.util.Configuration;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * Created by NeutronStars on 30/07/2017
  */

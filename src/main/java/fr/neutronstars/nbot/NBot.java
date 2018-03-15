@@ -18,7 +18,7 @@ import java.io.IOException;
  */
 public final class NBot
 {
-    private static final String NAME = "NBot", VERSION = "2.0.2", AUTHOR = "NeutronStars";
+    private static final String NAME = "NBot", VERSION = "2.0.3", AUTHOR = "NeutronStars";
     private static final NBotLogger logger = NBotLogger.getLogger("NBot");
     private static NBotServer server;
 
