@@ -1,10 +1,8 @@
 package fr.neutronstars.nbot.entity;
 
 import fr.neutronstars.nbot.NBot;
-import fr.neutronstars.nbot.NBotStart;
-import fr.neutronstars.nbot.logger.NBotLogger;
 import fr.neutronstars.nbot.plugin.PluginManager;
-import net.dv8tion.jda.core.entities.*;
+import org.slf4j.impl.NBotLogger;
 
 import java.util.Scanner;
 
@@ -13,7 +11,7 @@ import java.util.Scanner;
  */
 public class Console implements CommandSender, Runnable
 {
-    private final NBotLogger logger = NBotLogger.getLogger("NBot");
+    private final NBotLogger logger = NBot.getLogger();
     private final Thread thread = new Thread(this, "console");
     private final Scanner scanner = new Scanner(System.in);
     private final PluginManager pluginManager;
@@ -52,7 +50,7 @@ public class Console implements CommandSender, Runnable
             NBot.getGuild(guild).save();
 
         NBot.getJDA().shutdown();
-        logger.log(NBot.getName()+ " is down.");
+        logger.info(NBot.getName()+ " is down.");
 
         NBot.saveLogger();
         System.exit(0);
@@ -60,7 +58,7 @@ public class Console implements CommandSender, Runnable
 
     public void sendMessageToSender(String message)
     {
-        logger.log(message);
+        logger.info(message);
     }
 
     public String getAsMention()

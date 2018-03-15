@@ -3,9 +3,10 @@ package fr.neutronstars.nbot;
 import fr.neutronstars.nbot.command.CommandManager;
 import fr.neutronstars.nbot.command.defaut.DefaultCommand;
 import fr.neutronstars.nbot.exception.NBotConfigurationException;
-import fr.neutronstars.nbot.logger.NBotLogger;
 import fr.neutronstars.nbot.plugin.PluginManager;
 import fr.neutronstars.nbot.util.Configuration;
+import org.slf4j.impl.NBotLogger;
+import org.slf4j.impl.StaticLoggerBinder;
 
 import java.io.File;
 /**
@@ -13,13 +14,13 @@ import java.io.File;
  */
 public class NBotStart
 {
-    private static final NBotLogger logger = NBotLogger.getLogger("NBot");
+    private static final NBotLogger logger = StaticLoggerBinder.getSingleton().getLoggerFactory().getLogger("NBot");
 
     public static void main(String... args)
     {
         System.setProperty("file.encoding", "UTF-8");
 
-        logger.log(String.format("Starting %1$s v%2$s by %3$s...", NBot.getName(), NBot.getVersion(), NBot.getAuthor()));
+        logger.info(String.format("Starting %1$s v%2$s by %3$s...", NBot.getName(), NBot.getVersion(), NBot.getAuthor()));
 
         loadFolders("guilds", "plugins", "config");
 
@@ -37,7 +38,7 @@ public class NBotStart
             loop(server);
         } catch(Exception e)
         {
-            logger.logThrowable(e);
+            logger.error(e.getMessage(), e);
             NBot.saveLogger();
         }
     }
@@ -82,18 +83,12 @@ public class NBotStart
     {
         if(configuration == null)
         {
-            logger.logThrowable(new NBotConfigurationException("The config cannot be null."));
+            logger.error("The config cannot be null.", new NBotConfigurationException("The config cannot be null."));
             NBot.saveLogger();
             System.exit(0);
         }
 
         if(!configuration.has("token")) configuration.set("token", "Insert your token here.");
-
-        if(!configuration.has("dateFormat")) configuration.set("dateFormat", NBotLogger.getDateFormat());
-        NBotLogger.setDateFormat(configuration.getString("dateFormat"));
-
-        if(!configuration.has("pattern")) configuration.set("pattern", NBotLogger.getPattern());
-        NBotLogger.setPattern(configuration.getString("pattern"));
 
         if(!configuration.has("playing")) configuration.set("playing", "null");
 

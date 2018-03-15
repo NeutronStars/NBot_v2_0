@@ -4,14 +4,12 @@ import fr.neutronstars.nbot.NBot;
 import fr.neutronstars.nbot.entity.Guild;
 import fr.neutronstars.nbot.entity.Message;
 import fr.neutronstars.nbot.entity.User;
-import fr.neutronstars.nbot.logger.NBotLogger;
 import fr.neutronstars.nbot.plugin.PluginManager;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.events.ReadyEvent;
-import net.dv8tion.jda.core.events.guild.GuildBanEvent;
-import net.dv8tion.jda.core.events.guild.GuildLeaveEvent;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
+import org.slf4j.impl.NBotLogger;
 
 import java.io.File;
 
@@ -20,7 +18,7 @@ import java.io.File;
  */
 public class NBotListener extends ListenerAdapter
 {
-    private final NBotLogger logger = NBotLogger.getLogger("NBot");
+    private final NBotLogger logger = NBot.getLogger();
     private final PluginManager pluginManager;
 
     public NBotListener(PluginManager pluginManager)
@@ -46,7 +44,7 @@ public class NBotListener extends ListenerAdapter
         if(playing != null && !playing.equalsIgnoreCase("null"))
             NBot.getJDA().getPresence().setGame(Game.listening(playing));
 
-        logger.log(builder.toString());
+        logger.info(builder.toString());
 
         NBot.getConsole();
 

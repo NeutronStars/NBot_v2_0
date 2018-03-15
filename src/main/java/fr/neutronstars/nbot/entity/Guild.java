@@ -3,7 +3,6 @@ package fr.neutronstars.nbot.entity;
 import fr.neutronstars.nbot.NBot;
 import fr.neutronstars.nbot.command.CommandMap;
 import fr.neutronstars.nbot.command.SimpleCommand;
-import fr.neutronstars.nbot.logger.NBotLogger;
 import fr.neutronstars.nbot.util.Configuration;
 import fr.neutronstars.nbot.util.JSONReader;
 import fr.neutronstars.nbot.util.JSONWriter;
@@ -493,11 +492,11 @@ public class Guild implements net.dv8tion.jda.core.entities.Guild
             save(usersPower, writer);
             save(rolePowers, powerRoles);
 
-            NBot.getLogger().log(getName()+" is saved.");
+            NBot.getLogger().info(getName()+" is saved.");
         }
         catch(IOException ioe)
         {
-            NBotLogger.getLogger("NBot").logThrowable(ioe);
+            NBot.getLogger().error(ioe.getMessage(), ioe);
         }
     }
 

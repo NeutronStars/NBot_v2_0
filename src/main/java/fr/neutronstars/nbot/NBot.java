@@ -4,12 +4,14 @@ import fr.neutronstars.nbot.entity.Console;
 import fr.neutronstars.nbot.entity.Guild;
 import fr.neutronstars.nbot.exception.NBotInitializationException;
 import fr.neutronstars.nbot.exception.NBotUnsupportedOperationException;
-import fr.neutronstars.nbot.logger.NBotLogger;
 import fr.neutronstars.nbot.plugin.PluginManager;
 import fr.neutronstars.nbot.scheduler.Scheduler;
 import fr.neutronstars.nbot.util.Configuration;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.hooks.EventListener;
+import org.slf4j.Logger;
+import org.slf4j.impl.NBotLogger;
+import org.slf4j.impl.StaticLoggerBinder;
 
 import java.io.IOException;
 
@@ -19,7 +21,7 @@ import java.io.IOException;
 public final class NBot
 {
     private static final String NAME = "NBot", VERSION = "2.0.3", AUTHOR = "NeutronStars";
-    private static final NBotLogger logger = NBotLogger.getLogger("NBot");
+    private static final NBotLogger logger = StaticLoggerBinder.getSingleton().getLoggerFactory().getLogger("NBot");
     private static NBotServer server;
 
     protected static void setServer(NBotServer server)
@@ -96,12 +98,12 @@ public final class NBot
     {
         try
         {
-            NBotLogger.save("logs", logger.nowTimeFormat().split("-")[0].replace("/", "-"));
+            StaticLoggerBinder.getSingleton().getLoggerFactory().save();
         }
         catch(IOException e)
         {
-            logger.logThrowable(e);
-            logger.log("Stopping NBot in 5 seconds.");
+            logger.error(e.getMessage(), e);
+            logger.info("Stopping NBot in 5 seconds.");
             try
             {
                 Thread.sleep(5000L);

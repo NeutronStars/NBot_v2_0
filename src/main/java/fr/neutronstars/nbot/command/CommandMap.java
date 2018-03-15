@@ -128,7 +128,7 @@ public final class CommandMap
         Object[] objects = getCommands(command.split(" "));
         if(objects[0] == null) return false;
 
-        NBot.getLogger().log("[Command] "+user.getName() + " -> "+command);
+        NBot.getLogger().info("[Command] "+user.getName() + " -> "+command);
 
         SimpleCommand simpleCommand = (SimpleCommand)objects[0];
         if(!guild.hasPermission(user, simpleCommand.getPower())) return false;
@@ -136,7 +136,7 @@ public final class CommandMap
         try {
             execute(simpleCommand, command, (String[]) objects[1], message, user);
         }catch(Exception e) {
-            NBot.getLogger().logThrowable(e);
+            NBot.getLogger().error(e.getMessage(), e);
         }
         return true;
     }

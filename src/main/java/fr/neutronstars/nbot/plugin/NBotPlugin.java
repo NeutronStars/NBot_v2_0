@@ -1,8 +1,10 @@
 package fr.neutronstars.nbot.plugin;
 
+import fr.neutronstars.nbot.NBot;
 import fr.neutronstars.nbot.command.CommandManager;
 import fr.neutronstars.nbot.exception.NBotPluginException;
-import fr.neutronstars.nbot.logger.NBotLogger;
+import org.slf4j.impl.NBotLogger;
+import org.slf4j.impl.StaticLoggerBinder;
 
 /**
  * Created by NeutronStars on 01/08/2017
@@ -82,7 +84,7 @@ public abstract class NBotPlugin
         try {
             registerCommand(clazz.newInstance());
         } catch(Exception e) {
-            getLogger().logThrowable(e);
+            getLogger().error(e.getMessage(), e);
         }
     }
 
@@ -92,13 +94,13 @@ public abstract class NBotPlugin
             try {
                 registerCommand(clazz.newInstance());
             } catch(Exception e) {
-                getLogger().logThrowable(e);
+                getLogger().error(e.getMessage(), e);
             }
     }
 
     public final NBotLogger getLogger()
     {
-        return NBotLogger.getLogger(name);
+        return StaticLoggerBinder.getSingleton().getLoggerFactory().getLogger(name);
     }
 
     public void onLoad(){}

@@ -1,6 +1,6 @@
 package fr.neutronstars.nbot.util;
 
-import fr.neutronstars.nbot.logger.NBotLogger;
+import fr.neutronstars.nbot.NBot;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -62,7 +62,7 @@ public final class JSONReader
         }
         catch(IOException e)
         {
-            NBotLogger.getLogger("NBot").logThrowable(e);
+            NBot.getLogger().error(e.getMessage(), e);
         }
         return new ArrayList<>();
     }
@@ -90,7 +90,7 @@ public final class JSONReader
         }
         catch(IOException e)
         {
-            NBotLogger.getLogger("NBot").logThrowable(e);
+            NBot.getLogger().error(e.getMessage(), e);
         }
 
         return list;
@@ -109,7 +109,7 @@ public final class JSONReader
         }
         catch(IOException e)
         {
-            NBotLogger.getLogger("NBot").logThrowable(e);
+            NBot.getLogger().error(e.getMessage(), e);
         }
         return new HashMap<>();
     }
@@ -139,7 +139,7 @@ public final class JSONReader
         }
         catch(IOException e)
         {
-            NBotLogger.getLogger("NBot").logThrowable(e);
+            NBot.getLogger().error(e.getMessage(), e);
         }
 
         return map;

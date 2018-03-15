@@ -1,9 +1,10 @@
 package fr.neutronstars.nbot.plugin;
 
+import fr.neutronstars.nbot.NBot;
 import fr.neutronstars.nbot.exception.NBotPluginException;
-import fr.neutronstars.nbot.logger.NBotLogger;
 import fr.neutronstars.nbot.util.JSONReader;
 import org.json.JSONObject;
+import org.slf4j.impl.NBotLogger;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -21,7 +22,7 @@ import java.util.jar.JarFile;
 public final class PluginManager
 {
     private final Map<Class<? extends NBotPlugin>, NBotPlugin> plugins = new HashMap<>();
-    private final NBotLogger logger = NBotLogger.getLogger("NBot");
+    private final NBotLogger logger = NBot.getLogger();
     private final String loadedFormat, enabledFormat, disabledFormat;
 
     public PluginManager(String loadedFormat, String enabledFormat, String disabledFormat)
@@ -48,7 +49,7 @@ public final class PluginManager
         NBotPlugin nBotPlugin = loadNBotPlugin(file);
         if(nBotPlugin == null) return;
         nBotPlugin.onLoad();
-        logger.log(String.format(loadedFormat, nBotPlugin.getName(), nBotPlugin.getVersion(), nBotPlugin.getAuthorsToString()));
+        logger.info(String.format(loadedFormat, nBotPlugin.getName(), nBotPlugin.getVersion(), nBotPlugin.getAuthorsToString()));
     }
 
     private NBotPlugin loadNBotPlugin(File file)
@@ -69,7 +70,7 @@ public final class PluginManager
         }
         catch(Exception e)
         {
-            logger.logThrowable(new NBotPluginException(e));
+            logger.error(e.getMessage(), new NBotPluginException(e));
         }
         return null;
     }
@@ -85,7 +86,7 @@ public final class PluginManager
         for(NBotPlugin nBotPlugin : plugins.values())
         {
             nBotPlugin.onEnable();
-            logger.log(String.format(enabledFormat, nBotPlugin.getName(), nBotPlugin.getVersion(), nBotPlugin.getAuthorsToString()));
+            logger.info(String.format(enabledFormat, nBotPlugin.getName(), nBotPlugin.getVersion(), nBotPlugin.getAuthorsToString()));
         }
     }
 
@@ -94,11 +95,11 @@ public final class PluginManager
         for(NBotPlugin nBotPlugin : plugins.values())
         {
             nBotPlugin.onDisable();
-            logger.log(String.format(disabledFormat, nBotPlugin.getName(), nBotPlugin.getVersion(), nBotPlugin.getAuthorsToString()));
+            logger.info(String.format(disabledFormat, nBotPlugin.getName(), nBotPlugin.getVersion(), nBotPlugin.getAuthorsToString()));
             try {
                 nBotPlugin.getClassLoader().close();
             } catch(IOException e) {
-                logger.logThrowable(e);
+                logger.error(e.getMessage(), e);
             }
         }
     }

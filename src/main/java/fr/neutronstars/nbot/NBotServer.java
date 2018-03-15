@@ -3,7 +3,6 @@ package fr.neutronstars.nbot;
 import fr.neutronstars.nbot.entity.Console;
 import fr.neutronstars.nbot.entity.Guild;
 import fr.neutronstars.nbot.listener.NBotListener;
-import fr.neutronstars.nbot.logger.NBotLogger;
 import fr.neutronstars.nbot.plugin.PluginManager;
 import fr.neutronstars.nbot.scheduler.Scheduler;
 import fr.neutronstars.nbot.util.Configuration;
@@ -11,6 +10,8 @@ import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
+import org.slf4j.impl.NBotLogger;
+import org.slf4j.impl.StaticLoggerBinder;
 
 import javax.security.auth.login.LoginException;
 import java.util.HashMap;
@@ -21,7 +22,7 @@ import java.util.Map;
  */
 final class NBotServer
 {
-    private final NBotLogger logger = NBotLogger.getLogger("NBot");
+    private final NBotLogger logger = StaticLoggerBinder.getSingleton().getLoggerFactory().getLogger("NBot");
     private final Map<Long, Guild> guilds = new HashMap<>();
     private final Scheduler scheduler = new Scheduler();
     private final Configuration configuration;

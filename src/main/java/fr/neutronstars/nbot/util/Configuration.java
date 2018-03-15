@@ -1,7 +1,7 @@
 package fr.neutronstars.nbot.util;
 
+import fr.neutronstars.nbot.NBot;
 import fr.neutronstars.nbot.exception.NBotConfigurationException;
-import fr.neutronstars.nbot.logger.NBotLogger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -98,7 +98,7 @@ public class Configuration
         }
         catch(IOException ioe)
         {
-            NBotLogger.getLogger("NBot").logThrowable(new NBotConfigurationException(ioe));
+            NBot.getLogger().error(ioe.getMessage(), new NBotConfigurationException(ioe));
         }
     }
 
@@ -112,7 +112,7 @@ public class Configuration
         }
         catch(IOException ioe)
         {
-            NBotLogger.getLogger("NBot").logThrowable(new NBotConfigurationException(ioe));
+            NBot.getLogger().error(ioe.getMessage(), new NBotConfigurationException(ioe));
         }
         return null;
     }
