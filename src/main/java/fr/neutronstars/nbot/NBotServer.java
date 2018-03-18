@@ -41,6 +41,11 @@ final class NBotServer
                                              .addEventListener(new NBotListener(pluginManager)).buildAsync();
     }
 
+    public NBotLogger getLogger()
+    {
+        return logger;
+    }
+
     public JDA getJDA()
     {
         return jda;

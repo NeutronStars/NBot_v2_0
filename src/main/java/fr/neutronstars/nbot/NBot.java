@@ -20,7 +20,7 @@ import java.io.IOException;
  */
 public final class NBot
 {
-    private static final String NAME = "NBot", VERSION = "2.0.3", AUTHOR = "NeutronStars";
+    private static final String NAME = "NBot", VERSION = "2.0.4", AUTHOR = "NeutronStars";
     private static final NBotLogger logger = StaticLoggerBinder.getSingleton().getLoggerFactory().getLogger("NBot");
     private static NBotServer server;
 

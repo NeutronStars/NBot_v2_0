@@ -42,7 +42,7 @@ public class NBotListener extends ListenerAdapter
 
         String playing = NBot.getConfiguration().getString("playing");
         if(playing != null && !playing.equalsIgnoreCase("null"))
-            NBot.getJDA().getPresence().setGame(Game.listening(playing));
+            NBot.getJDA().getPresence().setGame(Game.playing(playing));
 
         logger.info(builder.toString());
 

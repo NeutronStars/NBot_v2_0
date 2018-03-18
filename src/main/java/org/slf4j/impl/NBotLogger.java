@@ -1,5 +1,6 @@
 package org.slf4j.impl;
 
+import fr.neutronstars.nbot.util.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.Marker;
 import org.slf4j.event.LoggingEvent;
@@ -20,11 +21,28 @@ public class NBotLogger implements Logger
     protected static final int LOG_LEVEL_WARN = LocationAwareLogger.WARN_INT;
     protected static final int LOG_LEVEL_ERROR = LocationAwareLogger.ERROR_INT;
 
+
+    private static final String ANSI_RESET = "\u001B[0m";
+    private static final String ANSI_BLACK = "\u001B[30m";
+    private static final String ANSI_RED = "\u001B[31m";
+    private static final String ANSI_GREEN = "\u001B[32m";
+    private static final String ANSI_YELLOW = "\u001B[33m";
+    private static final String ANSI_BLUE = "\u001B[34m";
+    private static final String ANSI_PURPLE = "\u001B[35m";
+    private static final String ANSI_CYAN = "\u001B[36m";
+    private static final String ANSI_WHITE = "\u001B[37m";
+
+    private static String lineFormat = "[{DATE}] [{LEVEL}-{NAME}] {MESSAGE}";
+
     private final NBotLoggerFactory source;
     private final String name;
 
     /** The current log level */
-    protected int currentLogLevel = LOG_LEVEL_INFO;
+    private boolean debugLevel = false;
+    private boolean traceLevel = false;
+    private boolean infoLevel = true;
+    private boolean warnLevel = true;
+    private boolean errorLevel = true;
 
     public NBotLogger(String name, NBotLoggerFactory source)
     {
@@ -36,6 +54,38 @@ public class NBotLogger implements Logger
     public String getName()
     {
         return name;
+    }
+
+    public void setTraceLevel(boolean traceLevel)
+    {
+        this.traceLevel = traceLevel;
+    }
+
+    public void setDebugLevel(boolean debugLevel)
+    {
+        this.debugLevel = debugLevel;
+    }
+
+    public void setInfoLevel(boolean infoLevel)
+    {
+        this.infoLevel = infoLevel;
+    }
+
+    public void setWarnLevel(boolean warnLevel)
+    {
+        this.warnLevel = warnLevel;
+    }
+
+    public void setErrorLevel(boolean errorLevel)
+    {
+        this.errorLevel = errorLevel;
+    }
+
+    public static void load(Configuration configuration)
+    {
+        if(configuration == null) return;
+        if(configuration.has("loggerTimeFormat")) simpleDate.applyPattern(configuration.getString("loggerTimeFormat"));
+        if(configuration.has("loggerLineFormat")) lineFormat = configuration.getString("loggerLineFormat");
     }
 
     /**
@@ -54,18 +104,19 @@ public class NBotLogger implements Logger
             return;
         }
 
-        StringBuilder buf = new StringBuilder(32);
-
-        // Append date-time if so configured
-        buf.append("[").append(simpleDate.format(new Date())).append("] ");
-
-        // Append a readable representation of the log level and name
-        String levelStr = renderLevel(level);
-        buf.append("[").append(levelStr).append("-").append(computeShortName()).append("] ");
+        String date = simpleDate.format(new Date());
+        String strLevel = renderLevel(level);
+        String line = formatLine(date, strLevel, message);
 
         // Append the message
-        buf.append(message);
-        write(buf, t);
+        write(date, strLevel, level, line, t);
+    }
+
+    private String formatLine(String date, String level, String message)
+    {
+        return lineFormat.replace("{DATE}", date)
+                .replace("{LEVEL}", level).replace("{NAME}", computeShortName())
+                .replace("{MESSAGE}", message);
     }
 
     protected String renderLevel(int level) {
@@ -84,21 +135,50 @@ public class NBotLogger implements Logger
         throw new IllegalStateException("Unrecognized level [" + level + "]");
     }
 
-    void write(StringBuilder buf, Throwable t) {
+    void write(String date, String strLevel, int level, String buf, Throwable t) {
         PrintStream targetStream = System.out;
 
-        String msg = buf.toString();
-        targetStream.println(msg);
-        writeThrowable(t, targetStream);
+        String color = getColorByLevel(level);
+
+        targetStream.println(color + buf);
+        source.log(buf);
+
+        writeThrowable(date, strLevel, color, t, targetStream);
         targetStream.flush();
 
-        source.log(msg);
+
     }
 
-    protected void writeThrowable(Throwable t, PrintStream targetStream) {
+    protected void writeThrowable(String date, String strLevel, String color, Throwable t, PrintStream targetStream) {
         if (t != null) {
-            t.printStackTrace(targetStream);
+            StringBuilder builder = new StringBuilder();
+
+            builder.append(formatLine(date, strLevel, t.toString()));
+
+            for (StackTraceElement traceElement : t.getStackTrace())
+                builder.append("\n").append(formatLine(date, strLevel, "\tat "+traceElement.toString()));
+
+            String msg = builder.toString();
+            targetStream.println(color + msg);
+            source.log(msg);
         }
+    }
+
+    private String getColorByLevel(int level)
+    {
+        switch (level) {
+            case LOG_LEVEL_TRACE:
+                return NBotLogger.ANSI_CYAN;
+            case LOG_LEVEL_DEBUG:
+                return NBotLogger.ANSI_PURPLE;
+            case LOG_LEVEL_INFO:
+                return NBotLogger.ANSI_BLUE;
+            case LOG_LEVEL_WARN:
+                return NBotLogger.ANSI_YELLOW;
+            case LOG_LEVEL_ERROR:
+                return NBotLogger.ANSI_RED;
+        }
+        return NBotLogger.ANSI_WHITE;
     }
 
     private String getFormattedDate() {
@@ -144,7 +224,19 @@ public class NBotLogger implements Logger
     protected boolean isLevelEnabled(int logLevel) {
         // log level are numerically ordered so can use simple numeric
         // comparison
-        return (logLevel >= currentLogLevel);
+        switch (logLevel) {
+            case LOG_LEVEL_TRACE:
+                return traceLevel;
+            case LOG_LEVEL_DEBUG:
+                return debugLevel;
+            case LOG_LEVEL_INFO:
+                return infoLevel;
+            case LOG_LEVEL_WARN:
+                return warnLevel;
+            case LOG_LEVEL_ERROR:
+                return errorLevel;
+        }
+        return true;
     }
 
     /** Are {@code trace} messages currently enabled? */

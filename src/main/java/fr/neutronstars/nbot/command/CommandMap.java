@@ -6,6 +6,7 @@ import fr.neutronstars.nbot.entity.Channel;
 import fr.neutronstars.nbot.entity.Guild;
 import fr.neutronstars.nbot.entity.Message;
 import fr.neutronstars.nbot.entity.User;
+import fr.neutronstars.nbot.plugin.NBotPlugin;
 import fr.neutronstars.nbot.util.Configuration;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
@@ -14,7 +15,9 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.lang.reflect.Parameter;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -128,15 +131,21 @@ public final class CommandMap
         Object[] objects = getCommands(command.split(" "));
         if(objects[0] == null) return false;
 
-        NBot.getLogger().info("[Command] "+user.getName() + " -> "+command);
-
         SimpleCommand simpleCommand = (SimpleCommand)objects[0];
         if(!guild.hasPermission(user, simpleCommand.getPower())) return false;
+
+        if(simpleCommand.getPlugin() != null)
+            simpleCommand.getPlugin().getLogger().info("[Command] "+user.getName() + " -> "+command);
+        else
+            NBot.getLogger().info("[Command] "+user.getName() + " -> "+command);
 
         try {
             execute(simpleCommand, command, (String[]) objects[1], message, user);
         }catch(Exception e) {
-            NBot.getLogger().error(e.getMessage(), e);
+            if(simpleCommand.getPlugin() != null)
+                simpleCommand.getPlugin().getLogger().error(e.getMessage(), e);
+            else
+               NBot.getLogger().error(e.getMessage(), e);
         }
         return true;
     }
@@ -153,6 +162,32 @@ public final class CommandMap
     public List<SimpleCommand> getCommands()
     {
         return new ArrayList<>(commands);
+    }
+
+    public List<SimpleCommand> getDefaultCommands()
+    {
+        List<SimpleCommand> defaultCommands = new ArrayList<>();
+        List<SimpleCommand> commands = getCommands();
+
+        for(SimpleCommand command : commands)
+            if(command.getPlugin() == null) defaultCommands.add(command);
+
+        return defaultCommands;
+    }
+
+    public Map<NBotPlugin, List<SimpleCommand>> getPkuginCommands()
+    {
+        Map<NBotPlugin, List<SimpleCommand>> pluginCommandMap = new HashMap<>();
+        List<SimpleCommand> commands = getCommands();
+
+        for(SimpleCommand command : commands)
+        {
+            if(command.getPlugin() == null) continue;
+            if(!pluginCommandMap.containsKey(command.getPlugin()))
+                pluginCommandMap.put(command.getPlugin(), new ArrayList<>());
+            pluginCommandMap.get(command.getPlugin()).add(command);
+        }
+        return pluginCommandMap;
     }
 
     private void execute(SimpleCommand simpleCommand, String command, String[] args, Message message, User user) throws Exception{

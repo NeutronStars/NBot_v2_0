@@ -20,12 +20,14 @@ public class NBotStart
     {
         System.setProperty("file.encoding", "UTF-8");
 
-        logger.info(String.format("Starting %1$s v%2$s by %3$s...", NBot.getName(), NBot.getVersion(), NBot.getAuthor()));
-
         loadFolders("guilds", "plugins", "config");
 
         Configuration configuration = loadConfiguration();
         setDefaultConfiguration(configuration);
+
+        NBotLogger.load(configuration);
+
+        logger.info(String.format("Starting %1$s v%2$s by %3$s...", NBot.getName(), NBot.getVersion(), NBot.getAuthor()));
 
         PluginManager pluginManager = new PluginManager(configuration.getString("loadedFormat"), configuration.getString("enabledFormat"), configuration.getString("disabledFormat"));
         CommandManager.registerCommand(new DefaultCommand(), null);
@@ -95,6 +97,9 @@ public class NBotStart
         if(!configuration.has("loadedFormat")) configuration.set("loadedFormat", "%1$s v%2$s by %3$s is loaded.");
         if(!configuration.has("enabledFormat")) configuration.set("enabledFormat", "%1$s v%2$s by %3$s is enabled.");
         if(!configuration.has("disabledFormat")) configuration.set("disabledFormat", "%1$s v%2$s by %3$s is disabled.");
+
+        if(!configuration.has("loggerTimeFormat")) configuration.set("loggerTimeFormat", "HH:mm:ss");
+        if(!configuration.has("loggerLineFormat")) configuration.set("loggerLineFormat", "[{DATE}] [{LEVEL}-{NAME}] {MESSAGE}");
 
         configuration.save();
     }

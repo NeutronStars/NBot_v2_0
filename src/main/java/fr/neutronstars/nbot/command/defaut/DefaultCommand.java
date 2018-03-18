@@ -15,21 +15,32 @@ import net.dv8tion.jda.core.entities.SelfUser;
 import java.awt.*;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by NeutronStars on 21/09/2017
  */
 public class DefaultCommand
 {
-    @Command(name = "help")
+    @Command(name = "help", description = "Send the commands list.")
     private void onHelp(User user, Channel channel, Guild guild)
     {
-        Collection<SimpleCommand> commands = guild.getCommands();
+        channel.sendMessageToChannel(user.getAsMention()+" check your private message !");
+
+        sendHelp("Default Commands", user, guild, guild.getDefaultCommands());
+
+        Map<NBotPlugin, List<SimpleCommand>> pluginCommandsMap = guild.getPluginCommands();
+        for(Map.Entry<NBotPlugin, List<SimpleCommand>> entry : pluginCommandsMap.entrySet())
+            sendHelp(entry.getKey().getName()+" Commands", user, guild, entry.getValue());
+    }
+
+    private void sendHelp(String title, User user, Guild guild, Collection<SimpleCommand> commands)
+    {
         EmbedBuilder builder = new EmbedBuilder();
-        builder.setTitle("Commands List");
+        builder.setTitle(title);
         builder.setDescription("Commands for the guild "+guild.getName()+"\n  -> Prefix : "+guild.getPrefix());
         builder.setColor(Color.MAGENTA);
-        builder.setFooter("API "+NBot.getName()+" v"+NBot.getVersion()+" by "+NBot.getAuthor(), null);
+        builder.setFooter(NBot.getName()+" API v"+NBot.getVersion()+" by "+NBot.getAuthor(), NBot.getJDA().getSelfUser().getAvatarUrl());
 
         for(SimpleCommand command : commands)
         {
@@ -40,10 +51,9 @@ public class DefaultCommand
         }
 
         user.sendMessageToChannel(builder.build());
-        channel.sendMessageToChannel(user.getAsMention()+" check your private message !");
     }
 
-    @Command(name="plugins")
+    @Command(name="plugins", description = "Show the list of plugins.")
     private void onPlugins(Channel channel)
     {
         Collection<NBotPlugin> plugins = NBot.getPluginManager().getPlugins();
@@ -64,7 +74,7 @@ public class DefaultCommand
         channel.sendMessageToChannel(builder.build());
     }
 
-    @Command(name = "prefix", powers = 100)
+    @Command(name = "prefix", powers = 100, description = "Change the prefix for the commands of the guild.")
     private void onPrefix(Guild guild, Channel channel, String[] args)
     {
         String prefix = args.length == 0 || args[0].equalsIgnoreCase("null") ? null : args[0];
@@ -72,7 +82,7 @@ public class DefaultCommand
         channel.sendMessageToChannel("Prefix modified -> "+prefix);
     }
 
-    @Command(name="power", powers = 100)
+    @Command(name="power", powers = 100, description = "Change the permissions of commands, users or role of the guild.")
     private void onPower(SimpleCommand command, User user1, Message message, String[] args, Guild guild)
     {
         if(args.length < 2)
@@ -121,7 +131,7 @@ public class DefaultCommand
         message.getMessageChannel().sendMessageToChannel(builder.toString());
     }
 
-    @Command(name = "commandname", powers = 100)
+    @Command(name = "commandname", powers = 100, description = "change the commands name of the guild.")
     private void onCommandName(SimpleCommand simpleCommand, User user, String[] args, Guild guild, Channel channel)
     {
         if(args.length < 2)

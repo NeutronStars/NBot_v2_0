@@ -3,6 +3,7 @@ package fr.neutronstars.nbot.entity;
 import fr.neutronstars.nbot.NBot;
 import fr.neutronstars.nbot.command.CommandMap;
 import fr.neutronstars.nbot.command.SimpleCommand;
+import fr.neutronstars.nbot.plugin.NBotPlugin;
 import fr.neutronstars.nbot.util.Configuration;
 import fr.neutronstars.nbot.util.JSONReader;
 import fr.neutronstars.nbot.util.JSONWriter;
@@ -508,6 +509,16 @@ public class Guild implements net.dv8tion.jda.core.entities.Guild
     public Collection<SimpleCommand> getCommands()
     {
         return commandMap.getCommands();
+    }
+
+    public Collection<SimpleCommand> getDefaultCommands()
+    {
+        return commandMap.getDefaultCommands();
+    }
+
+    public Map<NBotPlugin, List<SimpleCommand>> getPluginCommands()
+    {
+        return commandMap.getPkuginCommands();
     }
 
     public void setPrefix(String newPrefix)
