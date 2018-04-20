@@ -440,6 +440,16 @@ public class Guild implements net.dv8tion.jda.core.entities.Guild
         return configuration;
     }
 
+    public boolean isDeleteCommand()
+    {
+        return commandMap.isDeleteCommand();
+    }
+
+    public void setDeleteCommand(boolean deleteCommand)
+    {
+        commandMap.setDeleteCommand(deleteCommand);
+    }
+
     public int getPermissionUser(User user)
     {
         if(!usersPower.containsKey(user.getId())) setPermission(user, 0);
@@ -518,7 +528,7 @@ public class Guild implements net.dv8tion.jda.core.entities.Guild
 
     public Map<NBotPlugin, List<SimpleCommand>> getPluginCommands()
     {
-        return commandMap.getPkuginCommands();
+        return commandMap.getPluginCommands();
     }
 
     public void setPrefix(String newPrefix)

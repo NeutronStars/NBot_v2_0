@@ -12,6 +12,11 @@ import java.io.PrintStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+/**
+ * Origin Code by SLF4J-Simple [Link=https://github.com/qos-ch/slf4j/tree/master/slf4j-simple]
+ * Modified by NeutronStars
+ */
+
 public class NBotLogger implements Logger
 {
     protected static final SimpleDateFormat simpleDate = new SimpleDateFormat("HH:mm:ss");
@@ -20,6 +25,7 @@ public class NBotLogger implements Logger
     protected static final int LOG_LEVEL_INFO = LocationAwareLogger.INFO_INT;
     protected static final int LOG_LEVEL_WARN = LocationAwareLogger.WARN_INT;
     protected static final int LOG_LEVEL_ERROR = LocationAwareLogger.ERROR_INT;
+    protected static final int LOG_LEVEL_CONSOLE = 50;
 
 
     private static final String ANSI_RESET = "\u001B[0m";
@@ -116,7 +122,7 @@ public class NBotLogger implements Logger
     {
         return lineFormat.replace("{DATE}", date)
                 .replace("{LEVEL}", level).replace("{NAME}", computeShortName())
-                .replace("{MESSAGE}", message);
+                .replace("{MESSAGE}", String.valueOf(message));
     }
 
     protected String renderLevel(int level) {
@@ -131,6 +137,8 @@ public class NBotLogger implements Logger
                 return "WARN";
             case LOG_LEVEL_ERROR:
                 return "ERROR";
+            case LOG_LEVEL_CONSOLE:
+                return "CONSOLE";
         }
         throw new IllegalStateException("Unrecognized level [" + level + "]");
     }
@@ -145,8 +153,6 @@ public class NBotLogger implements Logger
 
         writeThrowable(date, strLevel, color, t, targetStream);
         targetStream.flush();
-
-
     }
 
     protected void writeThrowable(String date, String strLevel, String color, Throwable t, PrintStream targetStream) {
@@ -177,6 +183,8 @@ public class NBotLogger implements Logger
                 return NBotLogger.ANSI_YELLOW;
             case LOG_LEVEL_ERROR:
                 return NBotLogger.ANSI_RED;
+            case LOG_LEVEL_CONSOLE:
+                return NBotLogger.ANSI_GREEN;
         }
         return NBotLogger.ANSI_WHITE;
     }
@@ -334,6 +342,11 @@ public class NBotLogger implements Logger
      */
     public void info(String msg) {
         log(LOG_LEVEL_INFO, msg, null);
+    }
+
+    public void console(String msg)
+    {
+        log(LOG_LEVEL_CONSOLE, msg, null);
     }
 
     /**

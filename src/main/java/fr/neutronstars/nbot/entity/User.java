@@ -1,5 +1,6 @@
 package fr.neutronstars.nbot.entity;
 
+import fr.neutronstars.nbot.command.CommandManager;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.PrivateChannel;
@@ -116,7 +117,7 @@ public class User extends Channel implements net.dv8tion.jda.core.entities.User,
 
     public void performCommand(String command)
     {
-
+        CommandManager.onPrivateCommand(this, null, command);
     }
 
     public boolean isUser()

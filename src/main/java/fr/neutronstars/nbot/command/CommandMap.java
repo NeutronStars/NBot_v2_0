@@ -29,8 +29,10 @@ public final class CommandMap
     private final List<SimpleCommand> commands = new ArrayList<>();
     private final Map<String, SimpleCommand> commandMap;
     private final Configuration commandsDefaultConfig;
-    private String prefix = "bot.";
     private final Guild guild;
+
+    private String prefix = "bot.";
+    private boolean deleteCommand;
 
     public CommandMap(Guild guild)
     {
@@ -41,6 +43,7 @@ public final class CommandMap
         commands.addAll(commandMap.values());
 
         if(guild.getConfiguration().has("prefix")) prefix = guild.getConfiguration().getString("prefix");
+        if(guild.getConfiguration().has("deleteCommand")) deleteCommand = guild.getConfiguration().getBoolean("deleteCommand");
 
         loadCommands();
     }
@@ -61,22 +64,16 @@ public final class CommandMap
                     if(!customName.equalsIgnoreCase("null")) setCustomNameCommand(command.getSimpleName(), customName.toLowerCase());
                 }
 
-                if(object.has("aliases"))
+                if(object.has("power")) command.setPower(object.getInt("power"));
+
+                if(object.has("channels"))
                 {
-                    JSONArray array = object.getJSONArray("aliases");
+                    JSONArray array = object.getJSONArray("channels");
                     for(int i = 0; i < array.length(); i++)
                     {
-                        String alias = array.getString(i).toLowerCase();
-                        if(alias.equalsIgnoreCase("")) continue;
-                        if(!commandMap.containsKey(alias))
-                        {
-                            command.addAlias(alias);
-                            commandMap.put(alias, command);
-                        }
+                        command.addChannel(array.getLong(i));
                     }
                 }
-
-                if(object.has("power")) command.setPower(object.getInt("power"));
             }
         }
     }
@@ -91,11 +88,22 @@ public final class CommandMap
         return prefix;
     }
 
+    public boolean isDeleteCommand()
+    {
+        return deleteCommand;
+    }
+
     public void setPrefix(String prefix)
     {
         if(prefix == null) prefix = "bot.";
         this.prefix = prefix;
         guild.getConfiguration().set("prefix", prefix);
+    }
+
+    public void setDeleteCommand(boolean deleteCommand)
+    {
+        this.deleteCommand = deleteCommand;
+        guild.getConfiguration().set("deleteCommand", deleteCommand);
     }
 
     public SimpleCommand getCommand(String name)
@@ -128,11 +136,27 @@ public final class CommandMap
     public boolean onCommand(User user, String command, Message message)
     {
         if(command == null) return false;
-        Object[] objects = getCommands(command.split(" "));
+        Object[] objects = getCommands(commandMap, command.split(" "));
         if(objects[0] == null) return false;
 
+        if(objects[0] instanceof List)
+        {
+            List<String> list = (List<String>) objects[0];
+
+            StringBuilder builder = new StringBuilder(32);
+            builder.append(user.getAsMention()).append(" -> ");
+            for(int i = 0; i < list.size(); i++)
+            {
+                if(i != 0) builder.append(", ");
+                builder.append(list.get(i));
+            }
+            builder.append(".");
+            message.getChannel().sendMessage(builder.toString()).queue();
+            return true;
+        }
+
         SimpleCommand simpleCommand = (SimpleCommand)objects[0];
-        if(!guild.hasPermission(user, simpleCommand.getPower())) return false;
+        if(!guild.hasPermission(user, simpleCommand.getPower()) || !simpleCommand.canExecuteToChannel(message.getMessageChannel())) return false;
 
         if(simpleCommand.getPlugin() != null)
             simpleCommand.getPlugin().getLogger().info("[Command] "+user.getName() + " -> "+command);
@@ -141,7 +165,7 @@ public final class CommandMap
 
         try {
             execute(simpleCommand, command, (String[]) objects[1], message, user);
-        }catch(Exception e) {
+        }catch(Throwable e) {
             if(simpleCommand.getPlugin() != null)
                 simpleCommand.getPlugin().getLogger().error(e.getMessage(), e);
             else
@@ -150,13 +174,21 @@ public final class CommandMap
         return true;
     }
 
-    public Object[] getCommands(String[] commandSplit)
+    public static Object[] getCommands(Map<String, SimpleCommand> commandMap, String[] commandSplit)
     {
         if(commandSplit.length == 0) return null;
         String label = commandSplit[0].toLowerCase();
         String[] args = new String[commandSplit.length-1];
         for(int i = 1; i < commandSplit.length; i++) args[i-1] = commandSplit[i];
-        return new Object[]{commandMap.get(label), args};
+
+        SimpleCommand command = commandMap.get(label);
+        if(command != null) return new Object[]{command, args};
+
+        List<String> list = new ArrayList<>();
+        for(Map.Entry<String, SimpleCommand> entry : commandMap.entrySet())
+            if(entry.getKey().toLowerCase().startsWith(label)) list.add(entry.getKey());
+
+        return new Object[]{!list.isEmpty() ? list.size() == 1 ? commandMap.get(list.get(0)) : list : null, args};
     }
 
     public List<SimpleCommand> getCommands()
@@ -175,7 +207,7 @@ public final class CommandMap
         return defaultCommands;
     }
 
-    public Map<NBotPlugin, List<SimpleCommand>> getPkuginCommands()
+    public Map<NBotPlugin, List<SimpleCommand>> getPluginCommands()
     {
         Map<NBotPlugin, List<SimpleCommand>> pluginCommandMap = new HashMap<>();
         List<SimpleCommand> commands = getCommands();
@@ -190,7 +222,17 @@ public final class CommandMap
         return pluginCommandMap;
     }
 
-    private void execute(SimpleCommand simpleCommand, String command, String[] args, Message message, User user) throws Exception{
+    protected static void execute(SimpleCommand simpleCommand, String command, String[] args, Message message, CommandSender sender) throws Exception{
+        if(simpleCommand.getCommandBuilder() != null)
+        {
+            CommandArgs commandArgs = new CommandArgs(NBot.getJDA(), command, args, message, message == null ? null : NBot.getGuild(message.getGuild()),
+                    message == null ? null : message.getMessageChannel(), sender.isUser() ? (User) sender : null, sender, simpleCommand, message == null ? null : message.getCategory(),
+                    message == null || sender.isConsole() ? null : message.getGuild() == null ? null : message.getGuild().getMember((User) sender), sender.isConsole() ? null : (PrivateChannel) ((User)sender).getMessageChannel(),
+                    message == null ? null : message.getChannel() instanceof TextChannel ? (TextChannel) message.getChannel() : null, NBot.getJDA().getSelfUser());
+            simpleCommand.getCommandBuilder().execute(commandArgs);
+            return;
+        }
+
         Parameter[] parameters = simpleCommand.getMethod().getParameters();
         Object[] objects = new Object[parameters.length];
         for(int i = 0; i < parameters.length; i++){
@@ -201,14 +243,14 @@ public final class CommandMap
             else if(parameters[i].getType() == Guild.class || parameters[i].getType() == net.dv8tion.jda.core.entities.Guild.class) objects[i] = message == null ? null : NBot.getGuild(message.getGuild());
             else if(parameters[i].getType() == Channel.class || parameters[i].getType() == MessageChannel.class) objects[i] = message == null ? null : message.getMessageChannel();
 
-            else if(parameters[i].getType() == User.class || parameters[i].getType() == net.dv8tion.jda.core.entities.User.class) objects[i] = user;
-            else if(parameters[i].getType() == CommandSender.class) objects[i] = user;
+            else if(parameters[i].getType() == User.class || parameters[i].getType() == net.dv8tion.jda.core.entities.User.class) objects[i] = sender.isUser() ? (User)sender : null;
+            else if(parameters[i].getType() == CommandSender.class) objects[i] = sender;
             else if(parameters[i].getType() == SimpleCommand.class) objects[i] = simpleCommand;
 
             else if(parameters[i].getType() == Category.class) objects[i] = message == null ? null : message.getCategory();
-            else if(parameters[i].getType() == Member.class) objects[i] = message == null ? null : message.getGuild() == null ? null : message.getGuild().getMember(user);
+            else if(parameters[i].getType() == Member.class) objects[i] = message == null || sender.isConsole() ? null : message.getGuild() == null ? null : message.getGuild().getMember((User) sender);
 
-            else if(parameters[i].getType() == PrivateChannel.class) objects[i] = user == null ? null : (PrivateChannel) user.getMessageChannel();
+            else if(parameters[i].getType() == PrivateChannel.class) objects[i] = sender.isConsole() ? null : (PrivateChannel) ((User) sender).getMessageChannel();
             else if(parameters[i].getType() == TextChannel.class) objects[i] = message == null ? null : message.getChannel() instanceof TextChannel ? (TextChannel) message.getChannel() : null;
 
             else if(parameters[i].getType() == SelfUser.class) objects[i] = NBot.getJDA().getSelfUser();

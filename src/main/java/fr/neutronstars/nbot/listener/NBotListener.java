@@ -1,6 +1,7 @@
 package fr.neutronstars.nbot.listener;
 
 import fr.neutronstars.nbot.NBot;
+import fr.neutronstars.nbot.command.CommandManager;
 import fr.neutronstars.nbot.entity.Guild;
 import fr.neutronstars.nbot.entity.Message;
 import fr.neutronstars.nbot.entity.User;
@@ -8,6 +9,7 @@ import fr.neutronstars.nbot.plugin.PluginManager;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import org.slf4j.impl.NBotLogger;
 
@@ -59,7 +61,13 @@ public class NBotListener extends ListenerAdapter
 
     public void onMessageReceived(MessageReceivedEvent event)
     {
-        if(event.getAuthor().isBot() || event.getTextChannel() == null) return;
+        if(event.getAuthor().isBot()) return;
+        if(event.getTextChannel() == null)
+        {
+            CommandManager.onPrivateCommand(new User(event.getAuthor()), new Message(event.getMessage()), event.getMessage().getContentRaw());
+            return;
+        }
+
         Guild guild = NBot.getGuild(event.getGuild());
         String message = event.getMessage().getContentRaw();
         if(!message.startsWith(guild.getPrefix())) return;
@@ -67,7 +75,7 @@ public class NBotListener extends ListenerAdapter
         message = message.replaceFirst(guild.getPrefix(), "");
         Message message1 = new Message(event.getMessage());
 
-        if(guild.executeCommand(new User(event.getAuthor()), message, message1))
+        if(guild.executeCommand(new User(event.getAuthor()), message, message1) && guild.isDeleteCommand())
             message1.deleteTheMessage();
     }
 
@@ -80,5 +88,11 @@ public class NBotListener extends ListenerAdapter
                 deleteFile(file1);
         }
         file.delete();
+    }
+
+    @Override
+    public void onMessageReactionAdd(MessageReactionAddEvent event)
+    {
+        System.out.println(event.getReactionEmote());
     }
 }

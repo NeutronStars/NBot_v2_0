@@ -10,6 +10,11 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+/**
+ * Origin Code by SLF4J-Simple [Link=https://github.com/qos-ch/slf4j/tree/master/slf4j-simple]
+ * Modified by NeutronStars
+ */
+
 public class NBotLoggerFactory implements ILoggerFactory
 {
     private final ConcurrentMap<String, NBotLogger> loggerMap = new ConcurrentHashMap<>();

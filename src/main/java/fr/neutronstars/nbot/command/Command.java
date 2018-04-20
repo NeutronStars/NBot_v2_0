@@ -16,5 +16,13 @@ public @interface Command
     int powers() default 0;
 
     long[] guilds() default {};
-    long[] channels() default {};
+
+    boolean toPrivate() default false;
+    boolean privateOnly() default false;
+
+    ExecutorType executor() default ExecutorType.USER;
+
+    enum ExecutorType{
+        USER, CONSOLE, ALL
+    }
 }

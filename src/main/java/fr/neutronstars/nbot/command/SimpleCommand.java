@@ -1,7 +1,10 @@
 package fr.neutronstars.nbot.command;
 
+import fr.neutronstars.nbot.NBot;
+import fr.neutronstars.nbot.entity.Channel;
 import fr.neutronstars.nbot.entity.Guild;
 import fr.neutronstars.nbot.plugin.NBotPlugin;
+import net.dv8tion.jda.core.entities.MessageChannel;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -16,36 +19,59 @@ public class SimpleCommand
 {
     private final String name, description;
     private final List<Long> guilds = new ArrayList<>(), channels = new ArrayList<>();
-    private final List<String> aliases = new ArrayList<>();
+    private final CommandBuilder commandBuilder;
     private final NBotPlugin plugin;
     private final Method method;
     private final Object object;
+    private final Command.ExecutorType executor;
+    private final boolean toPrivate, privateOnly;
 
     private String customName;
     private int power;
 
-    protected SimpleCommand(String name, String description, int power, List<Long> guilds, List<Long> channels, Method method, Object object, NBotPlugin plugin)
+    protected SimpleCommand(String name, String description, int power, List<Long> guilds, Method method, Object object, Command.ExecutorType executor, boolean toPrivate, boolean privateOnly, NBotPlugin plugin)
     {
         this.name = name.toLowerCase();
         this.description = description;
         this.power = power;
         this.guilds.addAll(guilds);
-        this.channels.addAll(channels);
         this.method = method;
         this.object = object;
         this.plugin = plugin;
+        this.commandBuilder = null;
+        this.executor = executor;
+        this.toPrivate = toPrivate;
+        this.privateOnly = privateOnly;
     }
 
-    protected SimpleCommand(String name, String description, int power, long[] guilds, long[] channels, Method method, Object object, NBotPlugin plugin)
+    protected SimpleCommand(String name, String description, int power, long[] guilds, Method method, Object object, Command.ExecutorType executor, boolean toPrivate, boolean privateOnly, NBotPlugin plugin)
     {
         this.name = name.toLowerCase();
         this.description = description;
         this.power = power;
         for(long l : guilds) this.guilds.add(l);
-        for(long l : channels) this.channels.add(l);
         this.method = method;
         this.object = object;
         this.plugin = plugin;
+        this.commandBuilder = null;
+        this.executor = executor;
+        this.toPrivate = toPrivate;
+        this.privateOnly = privateOnly;
+    }
+
+    protected SimpleCommand(CommandBuilder commandBuilder, NBotPlugin plugin)
+    {
+        this.name = commandBuilder.getName();
+        this.description = commandBuilder.getDescription();
+        this.power = commandBuilder.getPower();
+        this.guilds.addAll(commandBuilder.getGuilds());
+        this.method = null;
+        this.object = null;
+        this.plugin = plugin;
+        this.commandBuilder = commandBuilder;
+        this.executor = commandBuilder.getExecutor();
+        this.toPrivate = commandBuilder.isToPrivate();
+        this.privateOnly = commandBuilder.isPrivateOnly();
     }
 
     public String getName()
@@ -78,6 +104,28 @@ public class SimpleCommand
         return method;
     }
 
+    public CommandBuilder getCommandBuilder()
+    {
+        return commandBuilder;
+    }
+
+    public boolean canExecuteToChannel(Channel channel)
+    {
+        updateChannels();
+        return channels.isEmpty() || channels.contains(channel.getIdLong());
+    }
+
+    private void updateChannels()
+    {
+        if(channels.isEmpty()) return;
+        List<Long> clone = new ArrayList<>(channels);
+        for(long id : clone)
+        {
+            if(NBot.getJDA().getTextChannelById(id) == null)
+                channels.remove(id);
+        }
+    }
+
     public Object getObject()
     {
         return object;
@@ -93,11 +141,6 @@ public class SimpleCommand
         return customName;
     }
 
-    public List<String> getAliases()
-    {
-        return aliases;
-    }
-
     public String getSimpleName()
     {
         return customName == null ? name : customName;
@@ -106,6 +149,21 @@ public class SimpleCommand
     public boolean guildCanExecute(Guild guild)
     {
         return guilds.contains(guild.getIdLong());
+    }
+
+    public void addChannel(MessageChannel channel)
+    {
+        if(!channels.contains(channel.getIdLong())) channels.add(channel.getIdLong());
+    }
+
+    public void addChannel(long id)
+    {
+        if(!channels.contains(id)) channels.add(id);
+    }
+
+    public void removeChannel(MessageChannel channel)
+    {
+        channels.remove(channel.getIdLong());
     }
 
     public void setCustomName(String customName)
@@ -118,40 +176,25 @@ public class SimpleCommand
         this.power = power;
     }
 
-    public void addAlias(String... aliases)
+    public boolean isPrivate()
     {
-        for(String alias : aliases)
-            if(!this.aliases.contains(alias)) this.aliases.add(alias);
+        return toPrivate;
     }
 
-    public void addAlias(Collection<String> aliases)
+    public boolean isPrivateOnly()
     {
-        for(String alias : aliases)
-            if(!this.aliases.contains(alias)) this.aliases.add(alias);
+        return privateOnly;
     }
 
-    public String getAliasesToString()
+    public boolean canExecute(Command.ExecutorType type)
     {
-        StringBuilder builder = new StringBuilder();
-
-        for(String alias : aliases)
-        {
-            if(builder.length() > 0) builder.append(", ");
-            builder.append(alias);
-        }
-
-        return builder.length() == 0 ? "Not Alias" : builder.toString();
-    }
-
-    public void removeAlias(String... aliases)
-    {
-        for(String alias : aliases)
-            if(!this.aliases.contains(alias)) this.aliases.remove(alias);
+        return executor == Command.ExecutorType.ALL || executor == type;
     }
 
     public SimpleCommand clone(Guild guild)
     {
-        return new SimpleCommand(name, description, power, Arrays.asList(guild.getIdLong()), new ArrayList<>(channels), method, object, plugin);
+        if(commandBuilder != null) return new SimpleCommand(commandBuilder, plugin);
+        return new SimpleCommand(name, description, power, Arrays.asList(guild.getIdLong()), method, object, executor, toPrivate, privateOnly, plugin);
     }
 
     public String toString()
@@ -163,8 +206,6 @@ public class SimpleCommand
                 .append("\",\"power\":").append(power)
                 .append(",\"guilds\":").append(guilds.toString())
                 .append(",\"channels\":").append(channels.toString())
-                .append(",\"aliases\":")
-                    .append(aliases.toString().replace(" ", "").replace("[", "[\"").replace(",", "\",\"").replace("]", "\"]"))
                 .append("}").toString();
     }
 }

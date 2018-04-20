@@ -2,6 +2,11 @@ package org.slf4j.impl;
 
 import org.slf4j.spi.LoggerFactoryBinder;
 
+/**
+ * Origin Code by SLF4J-Simple [Link=https://github.com/qos-ch/slf4j/tree/master/slf4j-simple]
+ * Modified by NeutronStars
+ */
+
 public class StaticLoggerBinder implements LoggerFactoryBinder
 {
     private static final StaticLoggerBinder SINGLETON = new StaticLoggerBinder();

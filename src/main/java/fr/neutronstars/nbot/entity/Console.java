@@ -1,6 +1,7 @@
 package fr.neutronstars.nbot.entity;
 
 import fr.neutronstars.nbot.NBot;
+import fr.neutronstars.nbot.command.CommandManager;
 import fr.neutronstars.nbot.plugin.PluginManager;
 import org.slf4j.impl.NBotLogger;
 
@@ -28,7 +29,7 @@ public class Console implements CommandSender, Runnable
 
     public void performCommand(String command)
     {
-
+        CommandManager.onConsoleCommand(this, command);
     }
 
     public void run()
@@ -37,28 +38,14 @@ public class Console implements CommandSender, Runnable
         {
             if(scanner.hasNextLine())
             {
-                if(scanner.nextLine().equalsIgnoreCase("stop"))
-                {
-                    break;
-                }
+                performCommand(scanner.nextLine().toLowerCase());
             }
         }
-
-        pluginManager.disablePlugins();
-
-        for(net.dv8tion.jda.core.entities.Guild guild : NBot.getJDA().getGuilds())
-            NBot.getGuild(guild).save();
-
-        NBot.getJDA().shutdown();
-        logger.info(NBot.getName()+ " is down.");
-
-        NBot.saveLogger();
-        System.exit(0);
     }
 
     public void sendMessageToSender(String message)
     {
-        logger.info(message);
+        logger.console(message);
     }
 
     public String getAsMention()

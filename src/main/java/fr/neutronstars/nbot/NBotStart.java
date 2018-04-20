@@ -1,7 +1,10 @@
 package fr.neutronstars.nbot;
 
+import fr.neutronstars.nbot.command.CommandBuilder;
 import fr.neutronstars.nbot.command.CommandManager;
+import fr.neutronstars.nbot.command.defaut.ConsoleCommand;
 import fr.neutronstars.nbot.command.defaut.DefaultCommand;
+import fr.neutronstars.nbot.command.defaut.HelpCommand;
 import fr.neutronstars.nbot.exception.NBotConfigurationException;
 import fr.neutronstars.nbot.plugin.PluginManager;
 import fr.neutronstars.nbot.util.Configuration;
@@ -20,7 +23,7 @@ public class NBotStart
     {
         System.setProperty("file.encoding", "UTF-8");
 
-        loadFolders("guilds", "plugins", "config");
+        loadFolders("guilds", "plugins", "config", "tmp");
 
         Configuration configuration = loadConfiguration();
         setDefaultConfiguration(configuration);
@@ -28,9 +31,10 @@ public class NBotStart
         NBotLogger.load(configuration);
 
         logger.info(String.format("Starting %1$s v%2$s by %3$s...", NBot.getName(), NBot.getVersion(), NBot.getAuthor()));
+        logger.info(String.format("Loading libraries of JDA v%1$s...", NBot.getJdaVersion()));
 
         PluginManager pluginManager = new PluginManager(configuration.getString("loadedFormat"), configuration.getString("enabledFormat"), configuration.getString("disabledFormat"));
-        CommandManager.registerCommand(new DefaultCommand(), null);
+        CommandManager.registerCommands(null, new DefaultCommand(), new ConsoleCommand(), new HelpCommand());
         pluginManager.registerCommands();
 
         try

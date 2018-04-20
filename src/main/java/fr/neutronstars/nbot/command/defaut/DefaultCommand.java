@@ -11,6 +11,7 @@ import fr.neutronstars.nbot.plugin.NBotPlugin;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.SelfUser;
+import net.dv8tion.jda.core.entities.TextChannel;
 
 import java.awt.*;
 import java.util.Collection;
@@ -22,37 +23,6 @@ import java.util.Map;
  */
 public class DefaultCommand
 {
-    @Command(name = "help", description = "Send the commands list.")
-    private void onHelp(User user, Channel channel, Guild guild)
-    {
-        channel.sendMessageToChannel(user.getAsMention()+" check your private message !");
-
-        sendHelp("Default Commands", user, guild, guild.getDefaultCommands());
-
-        Map<NBotPlugin, List<SimpleCommand>> pluginCommandsMap = guild.getPluginCommands();
-        for(Map.Entry<NBotPlugin, List<SimpleCommand>> entry : pluginCommandsMap.entrySet())
-            sendHelp(entry.getKey().getName()+" Commands", user, guild, entry.getValue());
-    }
-
-    private void sendHelp(String title, User user, Guild guild, Collection<SimpleCommand> commands)
-    {
-        EmbedBuilder builder = new EmbedBuilder();
-        builder.setTitle(title);
-        builder.setDescription("Commands for the guild "+guild.getName()+"\n  -> Prefix : "+guild.getPrefix());
-        builder.setColor(Color.MAGENTA);
-        builder.setFooter(NBot.getName()+" API v"+NBot.getVersion()+" by "+NBot.getAuthor(), NBot.getJDA().getSelfUser().getAvatarUrl());
-
-        for(SimpleCommand command : commands)
-        {
-            if(!guild.hasPermission(user, command.getPower())) continue;
-            String value = "[>](1) Description : "+command.getDescription();
-            if(command.getAliases().size() > 0) value += "\n[>](2) Aliases : "+command.getAliasesToString();
-            builder.addField(command.getSimpleName(), value, false);
-        }
-
-        user.sendMessageToChannel(builder.build());
-    }
-
     @Command(name="plugins", description = "Show the list of plugins.")
     private void onPlugins(Channel channel)
     {
@@ -178,5 +148,77 @@ public class DefaultCommand
         builder.setFooter("this bot use "+NBot.getName() + " v" + NBot.getVersion() + " developped by " + NBot.getAuthor(), null);
         builder.setColor(Color.RED);
         channel.sendMessageToChannel(builder.build());
+    }
+
+    @Command(name = "deleteCommand", description = "Deletes the user's command when executed.", powers = 100)
+    private void onDeleteCommand(User user, String[] args, Channel channel, Guild guild, SimpleCommand simpleCommand)
+    {
+        if (args.length == 0) {
+            channel.sendMessageToChannel(user.getAsMention() + ", " + guild.getPrefix() + simpleCommand.getSimpleName() + " <true[-t]|false[-f]>");
+            return;
+        }
+
+        if (args[0].equalsIgnoreCase("true") || args[0].equalsIgnoreCase("-t"))
+        {
+            guild.setDeleteCommand(true);
+            channel.sendMessageToChannel(user.getAsMention()+", the commands are now deleted after execution.");
+            return;
+        }
+        if (args[0].equalsIgnoreCase("false") || args[0].equalsIgnoreCase("-f"))
+        {
+            guild.setDeleteCommand(false);
+            channel.sendMessageToChannel(user.getAsMention()+", the commands are no longer deleted after execution.");
+            return;
+        }
+
+        channel.sendMessageToChannel(user.getAsMention() + ", " + guild.getPrefix() + simpleCommand.getSimpleName() + " <true[-t]|false[-f]>");
+    }
+
+    @Command(name = "cmdchan", description = "Set channels for command.", powers = 100)
+    private void onCmdChan(Channel channel, String[] args, Message message, User user, Guild guild, SimpleCommand simpleCommand)
+    {
+        if(args.length < 3)
+        {
+            channel.sendMessageToChannel(user.getAsMention()+", "+guild.getPrefix()+simpleCommand.getSimpleName()+" <add|remove> <commandName> <#Channel>");
+            return;
+        }
+
+        if(message.getMentionedChannels().isEmpty())
+        {
+            channel.sendMessageToChannel(user.getAsMention()+", "+guild.getPrefix()+simpleCommand.getSimpleName()+" <add|remove> <commandName> <#Channel>");
+            return;
+        }
+
+        TextChannel textChannel = message.getMentionedChannels().get(0);
+
+        boolean add;
+
+        if(args[0].equalsIgnoreCase("add") || args[0].equalsIgnoreCase("-a"))
+            add = true;
+        else if(args[0].equalsIgnoreCase("remove") || args[0].equalsIgnoreCase("-r"))
+            add = false;
+        else
+        {
+            channel.sendMessageToChannel(user.getAsMention()+", "+guild.getPrefix()+simpleCommand.getSimpleName()+" <add|remove> <commandName> <#Channel>");
+            return;
+        }
+
+        SimpleCommand targetCommand = guild.getCommand(args[1].toLowerCase());
+
+        if(targetCommand == null)
+        {
+            channel.sendMessageToChannel(user.getAsMention()+", command not found !");
+            return;
+        }
+
+        if(add)
+        {
+            targetCommand.addChannel(textChannel);
+            channel.sendMessageToChannel(user.getAsMention()+", adding channel "+textChannel.getName()+" for the command "+targetCommand.getSimpleName()+" !");
+            return;
+        }
+
+        targetCommand.removeChannel(textChannel);
+        channel.sendMessageToChannel(user.getAsMention()+", removing channel "+textChannel.getName()+" for the command "+targetCommand.getSimpleName()+" !");
     }
 }
