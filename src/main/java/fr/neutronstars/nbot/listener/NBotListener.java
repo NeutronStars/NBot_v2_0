@@ -10,6 +10,7 @@ import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent;
+import net.dv8tion.jda.core.hooks.EventListener;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import org.slf4j.impl.NBotLogger;
 
@@ -31,6 +32,12 @@ public class NBotListener extends ListenerAdapter
     public void onReady(ReadyEvent event)
     {
         pluginManager.enablePlugins();
+
+        for(Object object : event.getJDA().getRegisteredListeners())
+        {
+            if(object instanceof EventListener && object != this)
+                ((EventListener)object).onEvent(event);
+        }
 
         StringBuilder builder = new StringBuilder("\n-------------------------------\n")
                 .append(event.getJDA().getSelfUser().getName()).append(" is Ready.\n-------------------------------");
@@ -88,11 +95,5 @@ public class NBotListener extends ListenerAdapter
                 deleteFile(file1);
         }
         file.delete();
-    }
-
-    @Override
-    public void onMessageReactionAdd(MessageReactionAddEvent event)
-    {
-        System.out.println(event.getReactionEmote());
     }
 }

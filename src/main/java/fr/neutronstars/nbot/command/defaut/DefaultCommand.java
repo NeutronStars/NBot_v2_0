@@ -142,9 +142,13 @@ public class DefaultCommand
         EmbedBuilder builder = new EmbedBuilder();
         builder.setAuthor(user.getName(), "https://discordapp.com/oauth2/authorize?client_id=" + user.getId() + "&scope=bot&permissions=2146958583", user.getAvatarUrl() == null ? null : user.getAvatarUrl() + "?size=256");
         builder.setDescription("To invite the bot to your guild, click on its name above.");
+        builder.addBlankField(false);
         builder.addField("Guilds", "[>](1) " + NBot.getJDA().getGuilds().size(), true);
         builder.addField("Users", "[>](1) " + NBot.getJDA().getUsers().size(), true);
-        builder.addField("Plugins", "[>](1) " + NBot.getPluginManager().getPlugins().size(), false);
+        builder.addBlankField(false);
+        builder.addField("Plugins", "[>](1) " + NBot.getPluginManager().getPlugins().size(), true);
+        builder.addField("JDA version", "[>](1) "+NBot.getJdaVersion(), true);
+        builder.addBlankField(false);
         builder.setFooter("this bot use "+NBot.getName() + " v" + NBot.getVersion() + " developped by " + NBot.getAuthor(), null);
         builder.setColor(Color.RED);
         channel.sendMessageToChannel(builder.build());
@@ -220,5 +224,23 @@ public class DefaultCommand
 
         targetCommand.removeChannel(textChannel);
         channel.sendMessageToChannel(user.getAsMention()+", removing channel "+textChannel.getName()+" for the command "+targetCommand.getSimpleName()+" !");
+    }
+
+    @Command(name = "jda", description = "Send the link from the JDA API in GitHub.", toPrivate = true)
+    private void onJDA(Channel channel)
+    {
+        channel.sendMessageToChannel("https://github.com/DV8FromTheWorld/JDA");
+    }
+
+    @Command(name = "nbot", description = "Send the link from the NBot API in GitHub.", toPrivate = true)
+    private void onNBot(Channel channel)
+    {
+        channel.sendMessageToChannel("https://github.com/NeutronStars/NBot_v2_0");
+    }
+
+    @Command(name = "jdadoc", description = "Send the link from the JDA documentation.", toPrivate = true)
+    private void onJDADoc(Channel channel)
+    {
+        channel.sendMessageToChannel("http://home.dv8tion.net:8080/job/JDA/javadoc/");
     }
 }

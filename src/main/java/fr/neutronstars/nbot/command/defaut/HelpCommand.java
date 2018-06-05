@@ -30,7 +30,7 @@ public class HelpCommand
 
             Map<NBotPlugin, List<SimpleCommand>> pluginCommandsMap = CommandManager.getPluginCommands(false);
             for(Map.Entry<NBotPlugin, List<SimpleCommand>> entry : pluginCommandsMap.entrySet())
-                sendPrivateHelp(entry.getKey().getName()+" Commands", (User) sender, CommandManager.getDefaultCommands(false));
+                sendPrivateHelp(entry.getKey().getName()+" Commands", (User) sender, entry.getValue());
             return;
         }
 

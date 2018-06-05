@@ -37,7 +37,7 @@ public abstract class NBotPlugin
 
     public String getAuthorsToString()
     {
-        StringBuilder builder = new StringBuilder();
+        StringBuilder builder = new StringBuilder(32);
         for(int i = 0; ; i++)
         {
             if(i == authors.length) return builder.length() > 0 ? builder.toString() : "Not author";

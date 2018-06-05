@@ -18,6 +18,7 @@ import net.dv8tion.jda.core.managers.GuildController;
 import net.dv8tion.jda.core.managers.GuildManager;
 import net.dv8tion.jda.core.managers.GuildManagerUpdatable;
 import net.dv8tion.jda.core.requests.RestAction;
+import net.dv8tion.jda.core.requests.restaction.MemberAction;
 import net.dv8tion.jda.core.requests.restaction.pagination.AuditLogPaginationAction;
 import net.dv8tion.jda.core.utils.cache.MemberCacheView;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
@@ -72,6 +73,18 @@ public class Guild implements net.dv8tion.jda.core.entities.Guild
     public RestAction<EnumSet<Region>> retrieveRegions()
     {
         return guild.retrieveRegions();
+    }
+
+    @Override
+    public RestAction<EnumSet<Region>> retrieveRegions(boolean includeDeprecated)
+    {
+        return guild.retrieveRegions(includeDeprecated);
+    }
+
+    @Override
+    public MemberAction addMember(String accessToken, String userId)
+    {
+        return guild.addMember(accessToken, userId);
     }
 
     public String getName()
