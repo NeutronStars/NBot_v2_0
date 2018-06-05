@@ -232,6 +232,12 @@ public class DefaultCommand
         channel.sendMessageToChannel("https://github.com/DV8FromTheWorld/JDA");
     }
 
+    @Command(name = "slf4j", description = "Send the link from the SLF4J in GitHub.", toPrivate = true)
+    private void onSLF4J(Channel channel)
+    {
+        channel.sendMessageToChannel("https://github.com/qos-ch/slf4j");
+    }
+
     @Command(name = "nbot", description = "Send the link from the NBot API in GitHub.", toPrivate = true)
     private void onNBot(Channel channel)
     {
