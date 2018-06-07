@@ -1,3 +1,6 @@
+[discord-invite]: https://discord.gg/vPMzZcu
+[ ![Discord](https://discordapp.com/api/guilds/249183072329793536/widget.png) ][discord-invite]
+
 # __**[** *N-Bot API* **]**__
 
 N-Bot API is an __*open-source project*__ using **JDA** which will allow you **create/personalize** your bots simplest through a plugin system.
