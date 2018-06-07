@@ -17,25 +17,25 @@ public class MyPlugin extends NBotPlugin
   @Override
   public void onCommandRegisters()
   {
-     NBot.getLogger().log("Command registered for MyPlugin.");
+     NBot.getLogger().info("Command registered for MyPlugin.");
   }
 
   @Override
   public void onLoad()
   {
-     NBot.getLogger().log("MyPlugin is loaded.");
+     NBot.getLogger().info("MyPlugin is loaded.");
   }
 
   @Override
   public void onLoad()
   {
-     NBot.getLogger().log("MyPlugin is enabled.");
+     NBot.getLogger().info("MyPlugin is enabled.");
   }
 
   @Override
   public void onDisable()
   {
-     NBot.getLogger().log("MyPlugin is disabled.");
+     NBot.getLogger().info("MyPlugin is disabled.");
   }
 }
 ```
