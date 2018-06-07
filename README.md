@@ -2,7 +2,7 @@
 
 N-Bot API is an __*open-source project*__ using **JDA** which will allow you **create/personalize** your bots simplest through a plugin system.
 
-For use it download the [latest release](https://github.com/NeutronStars/N-Bot/releases) and execute the following command `java -jar N-Bot-VERSION-withDependencies-JDA-VERSION.jar` a **config** folder will appear who contains an **config.json** file. Open it and insert your bot **token**, now you can re-execute the previous command, folders are going to generate. When you want to stop the bot, just print `stop` in the console.
+For use it download the [latest release](https://github.com/NeutronStars/N-Bot/releases) and execute the following command `java -jar N-Bot-VERSION-withDependencies.jar` a **config** folder will appear who contains an **config.json** file. Open it and insert your bot **token**, now you can re-execute the previous command, folders are going to generate. When you want to stop the bot, just print `stop` in the console.
 
 For create a **plugin**, add the **N-Bot API** on your project libraries, your main class will need to extends **NBotPlugin** who contains `onLoad()`, `onRegisterCommands()`, `onEnable()` and `onDisable()` methods with `@Override` annotation.
 
