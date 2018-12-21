@@ -24,17 +24,17 @@ public class CommandBuilder
 
     public CommandBuilder(String name, String description, int power)
     {
-        this(name, description, 0, Command.ExecutorType.USER, false, false);
+        this(name, description, power, Command.ExecutorType.USER, false, false);
     }
 
     public CommandBuilder(String name, String description, boolean toPrivate, boolean privateOnly)
     {
-        this(name, description, 0, toPrivate, privateOnly);
+        this(name, description, power, toPrivate, privateOnly);
     }
 
     public CommandBuilder(String name, String description, int power, boolean toPrivate, boolean privateOnly)
     {
-        this(name, description, 0, Command.ExecutorType.USER, toPrivate, privateOnly);
+        this(name, description, power, Command.ExecutorType.USER, toPrivate, privateOnly);
     }
 
     public CommandBuilder(String name, String description, int power, Command.ExecutorType executor, boolean toPrivate, boolean privateOnly)
